@@ -1,4 +1,6 @@
+# pyrefly: ignore [missing-import]
 from fastapi import APIRouter, Depends, HTTPException
+# pyrefly: ignore [missing-import]
 from supabase import Client
 from dependencies import get_supabase_client, get_current_user_profile, require_role
 from schemas import AppointmentCreate, AppointmentStatusUpdate

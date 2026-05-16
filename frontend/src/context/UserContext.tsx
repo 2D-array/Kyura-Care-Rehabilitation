@@ -91,7 +91,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const fetchProfile = useCallback(async (accessToken: string) => {
     setProfileLoading(true)
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
       const headers = { Authorization: `Bearer ${accessToken}` }
 
       // Try unified /me endpoint first
@@ -117,7 +117,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return
       }
     } catch (err) {
-      console.error('[UserContext] Failed to fetch profile:', err)
+      console.warn('[UserContext] Failed to fetch profile (is backend running?):', err)
     } finally {
       setProfileLoading(false)
     }
@@ -162,7 +162,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       throw new Error('Not authenticated or profile not loaded')
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
     const headers = {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
