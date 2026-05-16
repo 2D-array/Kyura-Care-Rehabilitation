@@ -1,105 +1,744 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useEffect, useState, useRef } from "react"
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Activity, Heart, Home as HomeIcon } from "lucide-react"
+import {
+  Activity, Heart, Home as HomeIcon, Search, Bell, ShoppingCart,
+  Star, ChevronRight, Shield, Clock, Award, Users, Phone,
+  MapPin, CheckCircle, ArrowRight, Zap, Menu, X, ChevronDown,
+  Stethoscope, Pill, Ambulance, MessageCircle, Video, Calendar,
+  TrendingUp, BadgeCheck, Headphones, Package, Truck, RefreshCcw,
+  PlayCircle, ThumbsUp
+} from "lucide-react"
 import Link from "next/link"
+import { createBrowserClient } from '@supabase/ssr'
+
+const SPECIALTIES = [
+  { icon: "🦴", label: "Ortho" },
+  { icon: "🧠", label: "Neuro" },
+  { icon: "❤️", label: "Cardio" },
+  { icon: "🦷", label: "Dental" },
+  { icon: "👁️", label: "Eye" },
+  { icon: "🤰", label: "Maternity" },
+  { icon: "🧘", label: "Physio" },
+  { icon: "💉", label: "Diabetes" },
+]
+
+const OFFERS = [
+  { tag: "MEGA DEAL", title: "First Consultation FREE", sub: "For new users. Online or in-clinic.", color: "from-orange-500 to-red-500", badge: "🔥 Limited" },
+  { tag: "FLAT 30% OFF", title: "Home Physiotherapy", sub: "Book 3+ sessions & save big.", color: "from-blue-600 to-indigo-600", badge: "⚡ Popular" },
+  { tag: "CASHBACK ₹200", title: "PhysioPass Membership", sub: "Unlimited consultations / month.", color: "from-emerald-500 to-teal-600", badge: "💚 Best Value" },
+]
+
+const DOCTORS = [
+  { name: "Dr. Priya Sharma", spec: "Sports Physio", exp: "12 yrs", rating: 4.9, reviews: 1240, fee: "₹499", tag: "Top Rated", img: "👩‍⚕️" },
+  { name: "Dr. Rahul Mehta", spec: "Neuro Rehab", exp: "9 yrs", rating: 4.8, reviews: 890, fee: "₹599", tag: "Expert", img: "👨‍⚕️" },
+  { name: "Dr. Ananya Rao", spec: "Ortho Physio", exp: "15 yrs", rating: 5.0, reviews: 2100, fee: "₹699", tag: "Star Doctor", img: "👩‍⚕️" },
+  { name: "Dr. Kiran Patel", spec: "Pain Management", exp: "8 yrs", rating: 4.7, reviews: 670, fee: "₹449", tag: "Available Now", img: "👨‍⚕️" },
+]
+
+const TESTIMONIALS = [
+  { name: "Meera K.", loc: "Bangalore", text: "After my accident I was in so much pain. Within 6 sessions I was walking normally again! The at-home service is a blessing.", rating: 5, tag: "Verified Patient" },
+  { name: "Arjun S.", loc: "Mumbai", text: "Dr. Ananya's online session was as effective as being there in person. App is super smooth. Highly recommend!", rating: 5, tag: "Online Consult" },
+  { name: "Sunita T.", loc: "Delhi", text: "PhysioPass saved me ₹4000 in a single month. Best investment for my spine recovery journey.", rating: 5, tag: "PhysioPass User" },
+]
+
+const STATS = [
+  { value: "2M+", label: "Consultations Done", icon: Stethoscope },
+  { value: "500+", label: "Expert Specialists", icon: BadgeCheck },
+  { value: "98.4%", label: "Recovery Success", icon: TrendingUp },
+  { value: "24/7", label: "Always Available", icon: Headphones },
+]
+
+const HOW = [
+  { step: "01", icon: Search, title: "Search & Discover", desc: "Browse 500+ verified specialists by condition, location, or time slot.", color: "#FF6B35" },
+  { step: "02", icon: Calendar, title: "Book Instantly", desc: "Pick online, in-clinic or at-home. Real-time slots. Instant confirmation.", color: "#0066CC" },
+  { step: "03", icon: Video, title: "Connect & Heal", desc: "HD video, chat, or door-step visit. Track progress on your dashboard.", color: "#00A651" },
+]
+
+const SERVICES = [
+  { icon: Video, title: "Video Consultation", desc: "Talk to a specialist in minutes from your phone.", color: "#0066CC", bg: "#E8F0FA", stat: "Avg wait < 5 mins" },
+  { icon: HomeIcon, title: "At-Home Physio", desc: "Certified therapists at your doorstep, same day.", color: "#00A651", bg: "#E6F7EE", stat: "200+ cities covered" },
+  { icon: Activity, title: "In-Clinic Session", desc: "Advanced equipment & hands-on manipulation.", color: "#FF6B35", bg: "#FFF0E8", stat: "1500+ partner clinics" },
+  { icon: Pill, title: "Recovery Kits", desc: "Curated rehab equipment delivered to you.", color: "#9B59B6", bg: "#F3EAF9", stat: "Ships in 24 hrs" },
+]
 
 export default function LandingPage() {
-  return (
-    <main className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Hero Section */}
-      <section className="relative w-full overflow-hidden flex flex-col items-center justify-center pt-32 pb-20 px-4 md:pt-40 md:pb-28">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-100/50 via-transparent to-transparent dark:from-indigo-900/20 dark:via-transparent dark:to-transparent -z-10" />
-        
-        {/* Noise Texture */}
-        <div className="absolute inset-0 z-[-5] opacity-[0.03] dark:opacity-[0.02] mix-blend-overlay pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml;utf8,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')" }}></div>
-        
-        {/* Soft Blurred Blob */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/20 dark:bg-indigo-600/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
-        
-        <div className="container max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ duration: 0.6 }}
-            className="flex-1 text-center md:text-left space-y-6"
-          >
-            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tighter text-slate-900 dark:text-slate-50 leading-tight">
-              Recovery <br/><span className="text-indigo-600 dark:text-indigo-400">Starts Here.</span>
-            </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto md:mx-0">
-              Premium post-accident rehabilitation and long-term care tailored to you. Connect with elite specialists today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
-              <Link href="/doctors">
-                <Button size="lg" className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-8 hover:scale-105 transition-transform shadow-xl shadow-indigo-600/20">
-                  Find a Specialist
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full px-8 hover:scale-105 transition-transform bg-white/50 dark:bg-black/20 backdrop-blur-sm border-slate-200 dark:border-slate-800">
-                  Patient Portal
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [navScrolled, setNavScrolled] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
+  const [searchVal, setSearchVal] = useState("")
+  const [activeOffer, setActiveOffer] = useState(0)
+  const [cartCount] = useState(2)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const { scrollY } = useScroll()
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0])
+  const heroY = useTransform(scrollY, [0, 400], [0, -60])
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} 
-            animate={{ opacity: 1, scale: 1 }} 
-            transition={{ duration: 0.8 }}
-            className="flex-1 w-full relative"
-          >
-            <motion.div 
-              animate={{ y: [0, -15, 0] }} 
-              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-              className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-indigo-900/10 dark:shadow-indigo-900/40 border border-white/60 dark:border-white/10 aspect-square max-w-md mx-auto bg-gradient-to-tr from-indigo-500/10 to-emerald-500/10 backdrop-blur-xl flex items-center justify-center"
-            >
-              <Activity className="w-40 h-40 text-indigo-500 opacity-80" />
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setIsLoggedIn(true)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  useEffect(() => {
+    const onScroll = () => setNavScrolled(window.scrollY > 10)
+    window.addEventListener("scroll", onScroll)
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  useEffect(() => {
+    const t = setInterval(() => setActiveOffer(o => (o + 1) % OFFERS.length), 4000)
+    return () => clearInterval(t)
+  }, [])
+
+  return (
+    <main className="flex flex-col min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', 'Nunito', sans-serif", background: "#F4F6FB" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800&display=swap');
+        * { box-sizing: border-box; }
+        .navlink { font-size:14px; font-weight:600; color:#1a1a2e; transition:color .2s; cursor:pointer; }
+        .navlink:hover { color:#0066CC; }
+        .pill-btn { display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;font-size:13px;font-weight:700;transition:all .2s; cursor:pointer; }
+        .search-suggestion { display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;transition:background .15s; }
+        .search-suggestion:hover { background:#F0F4FF; }
+        .offer-card { border-radius:20px;padding:24px 28px;color:#fff;position:relative;overflow:hidden;cursor:pointer; }
+        .doc-card { background:#fff;border-radius:20px;padding:20px;border:1.5px solid #E8EDF5;transition:all .25s;cursor:pointer; }
+        .doc-card:hover { border-color:#0066CC;box-shadow:0 8px 32px rgba(0,102,204,.12);transform:translateY(-4px); }
+        .stat-pill { display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700; }
+        .service-card { background:#fff;border-radius:24px;padding:28px;border:1.5px solid #E8EDF5;transition:all .25s;cursor:pointer;display:flex;flex-direction:column;gap:14px; }
+        .service-card:hover { box-shadow:0 16px 48px rgba(0,0,0,.1);transform:translateY(-6px); }
+        .testi-card { background:#fff;border-radius:20px;padding:24px;border:1.5px solid #E8EDF5; }
+        .scroll-x::-webkit-scrollbar { display:none; }
+        .scroll-x { -ms-overflow-style:none;scrollbar-width:none; }
+        .hero-badge { display:inline-flex;align-items:center;gap:8px;background:rgba(0,102,204,.08);border:1px solid rgba(0,102,204,.2);border-radius:100px;padding:6px 16px;font-size:13px;font-weight:700;color:#0066CC; }
+        .section-tag { display:inline-block;background:#FFF0E8;color:#FF6B35;font-size:12px;font-weight:800;padding:4px 14px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px; }
+        @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        .marquee-track { display:flex;width:max-content;animation:marquee 18s linear infinite; }
+        .marquee-track:hover { animation-play-state:paused; }
+        @keyframes pulse-ring { 0%{transform:scale(.9);opacity:.7} 100%{transform:scale(1.3);opacity:0} }
+        .pulse-ring { animation:pulse-ring 1.8s ease-out infinite; }
+        .gradient-text { background:linear-gradient(135deg,#0066CC,#00A651);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+        .green-dot { width:8px;height:8px;background:#00A651;border-radius:50%;display:inline-block;margin-right:6px; }
+        .floating { animation: floatUpDown 4s ease-in-out infinite; }
+        @keyframes floatUpDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+      `}</style>
+
+      {/* TOP ANNOUNCEMENT BAR */}
+      <div style={{ background: "#0066CC", color: "#fff", padding: "8px 0", fontSize: 13, fontWeight: 600, textAlign: "center", letterSpacing: ".01em" }}>
+        🎉 NEW USER OFFER: First consultation FREE — <span style={{ textDecoration: "underline", cursor: "pointer" }}>Claim Now</span> &nbsp;|&nbsp; 🚚 Recovery Kits: FREE delivery on orders above ₹499
+      </div>
+
+      {/* NAVBAR */}
+      <nav style={{
+        position: "sticky", top: 0, zIndex: 100,
+        background: navScrolled ? "rgba(255,255,255,.97)" : "#fff",
+        borderBottom: "1.5px solid #E8EDF5",
+        backdropFilter: "blur(12px)",
+        transition: "box-shadow .3s",
+        boxShadow: navScrolled ? "0 4px 24px rgba(0,0,0,.08)" : "none"
+      }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", gap: 20, height: 68 }}>
+          {/* Logo */}
+          <Link href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 38, height: 38, background: "linear-gradient(135deg,#0066CC,#00A651)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Activity style={{ width: 20, height: 20, color: "#fff" }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 900, color: "#0066CC", lineHeight: 1, fontFamily: "'Syne', sans-serif" }}>PhysioNow</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#00A651", letterSpacing: ".05em" }}>REHAB PLATFORM</div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Search Bar */}
+          <div style={{ flex: 1, maxWidth: 560, position: "relative" }}>
+            <div style={{
+              display: "flex", alignItems: "center",
+              background: searchFocused ? "#fff" : "#F4F6FB",
+              border: `2px solid ${searchFocused ? "#0066CC" : "#E8EDF5"}`,
+              borderRadius: 100, padding: "0 16px", height: 44,
+              transition: "all .2s",
+              boxShadow: searchFocused ? "0 0 0 4px rgba(0,102,204,.1)" : "none"
+            }}>
+              <Search style={{ width: 18, height: 18, color: "#999", flexShrink: 0 }} />
+              <input
+                value={searchVal}
+                onChange={e => setSearchVal(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                placeholder="Search doctors, specialties, conditions…"
+                style={{ border: "none", outline: "none", background: "transparent", flex: 1, marginLeft: 10, fontSize: 14, fontWeight: 500, color: "#1a1a2e", fontFamily: "inherit" }}
+              />
+              {searchVal && <X style={{ width: 16, height: 16, color: "#999", cursor: "pointer" }} onClick={() => setSearchVal("")} />}
+              <div style={{ width: 1, height: 20, background: "#E8EDF5", margin: "0 10px" }} />
+              <button style={{ background: "#0066CC", border: "none", borderRadius: 100, padding: "6px 16px", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>Search</button>
+            </div>
+            <AnimatePresence>
+              {searchFocused && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
+                  style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0, background: "#fff", borderRadius: 16, border: "1.5px solid #E8EDF5", boxShadow: "0 20px 60px rgba(0,0,0,.12)", overflow: "hidden", zIndex: 200 }}
+                >
+                  <div style={{ padding: "10px 16px 4px", fontSize: 11, fontWeight: 800, color: "#999", textTransform: "uppercase", letterSpacing: ".06em" }}>Popular Searches</div>
+                  {["Knee pain physiotherapy", "Sports injury rehab", "Back pain specialist", "Shoulder dislocation", "Post-surgery recovery"].map((s, i) => (
+                    <div key={i} className="search-suggestion" onClick={() => { setSearchVal(s); setSearchFocused(false) }}>
+                      <Search style={{ width: 14, height: 14, color: "#0066CC" }} />
+                      <span style={{ fontSize: 14, fontWeight: 500, color: "#1a1a2e" }}>{s}</span>
+                    </div>
+                  ))}
+                  <div style={{ padding: "8px 16px", borderTop: "1px solid #F0F4FF", display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {SPECIALTIES.map((sp, i) => (
+                      <div key={i} onClick={() => { setSearchVal(sp.label); setSearchFocused(false) }} style={{ display: "flex", alignItems: "center", gap: 4, background: "#F4F6FB", borderRadius: 100, padding: "4px 12px", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#333" }}>
+                        <span>{sp.icon}</span> {sp.label}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Nav Links */}
+          <div style={{ display: "flex", alignItems: "center", gap: 24, flexShrink: 0 }}>
+            <div className="navlink" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              Doctors <ChevronDown style={{ width: 14, height: 14 }} />
+            </div>
+            <div className="navlink">Services</div>
+            <div className="navlink">Offers</div>
+            <div style={{ position: "relative", cursor: "pointer" }}>
+              <ShoppingCart style={{ width: 22, height: 22, color: "#1a1a2e" }} />
+              {cartCount > 0 && <div style={{ position: "absolute", top: -6, right: -6, background: "#FF6B35", color: "#fff", borderRadius: 100, width: 16, height: 16, fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</div>}
+            </div>
+            <div style={{ position: "relative", cursor: "pointer" }}>
+              <Bell style={{ width: 22, height: 22, color: "#1a1a2e" }} />
+              <div style={{ position: "absolute", top: 0, right: 0, width: 8, height: 8, background: "#FF6B35", borderRadius: 100, border: "2px solid #fff" }} />
+            </div>
+            {isLoggedIn ? (
+              <Link href="/dashboard">
+                <button className="pill-btn" style={{ background: "#0066CC", color: "#fff" }}>Dashboard <ArrowRight style={{ width: 14, height: 14 }} /></button>
+              </Link>
+            ) : (
+              <div style={{ display: "flex", gap: 8 }}>
+                <Link href="/auth/login">
+                  <button className="pill-btn" style={{ background: "#F4F6FB", color: "#1a1a2e", border: "1.5px solid #E8EDF5" }}>Log In</button>
+                </Link>
+                <Link href="/auth/signup">
+                  <button className="pill-btn" style={{ background: "#0066CC", color: "#fff" }}>Register Free</button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Sub Nav */}
+        <div style={{ background: "#F4F6FB", borderTop: "1px solid #E8EDF5" }}>
+          <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 24px", display: "flex", gap: 8, overflowX: "auto" }} className="scroll-x">
+            {[{ icon: "🦴", label: "Ortho Physio" }, { icon: "🧠", label: "Neuro Rehab" }, { icon: "❤️", label: "Cardiac Rehab" }, { icon: "🏃", label: "Sports Injury" }, { icon: "🦷", label: "Post-Dental" }, { icon: "💊", label: "Pain Mgmt" }, { icon: "🤰", label: "Pre/Post Natal" }, { icon: "👴", label: "Geriatric Care" }, { icon: "🧘", label: "Yoga Therapy" }].map((c, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", cursor: "pointer", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, color: "#444", borderBottom: i === 0 ? "2px solid #0066CC" : "2px solid transparent", color: i === 0 ? "#0066CC" : "#444", transition: "all .2s" }}>
+                <span>{c.icon}</span> {c.label}
+              </div>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <motion.section ref={heroRef} style={{ opacity: heroOpacity, y: heroY, position: "relative", background: "linear-gradient(135deg, #EBF4FF 0%, #F0FFF8 50%, #FFF4EE 100%)", padding: "0", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(0,102,204,.08) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0,166,81,.08) 0%, transparent 60%)", pointerEvents: "none" }} />
+
+        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "48px 24px 0" }}>
+          <div style={{ display: "flex", gap: 48, alignItems: "center" }}>
+            {/* Left */}
+            <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .6 }} style={{ flex: "1 1 520px", paddingBottom: 48 }}>
+              <div className="hero-badge" style={{ marginBottom: 20 }}>
+                <span className="green-dot" />
+                <span>500+ Specialists Available Now</span>
+              </div>
+              <h1 style={{ fontSize: "clamp(36px, 5vw, 58px)", fontWeight: 900, color: "#0D1B2A", lineHeight: 1.1, marginBottom: 18, fontFamily: "'Syne', sans-serif" }}>
+                Your Fastest Path to<br />
+                <span className="gradient-text">Complete Recovery</span>
+              </h1>
+              <p style={{ fontSize: 18, color: "#4A5568", lineHeight: 1.7, marginBottom: 28, maxWidth: 500 }}>
+                Expert physiotherapy at home, in-clinic, or online. India's most trusted rehabilitation platform — used by <strong>2 million+ patients.</strong>
+              </p>
+
+              {/* Quick Search */}
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
+                {["Knee Pain", "Back Pain", "Sports Injury", "Stroke Rehab", "Post Surgery"].map((tag, i) => (
+                  <div key={i} style={{ background: "#fff", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "6px 14px", fontSize: 13, fontWeight: 600, color: "#444", cursor: "pointer", transition: "all .2s" }}
+                    onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = "#0066CC"; (e.target as HTMLElement).style.color = "#0066CC" }}
+                    onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = "#E8EDF5"; (e.target as HTMLElement).style.color = "#444" }}>
+                    {tag}
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 36 }}>
+                <Link href={isLoggedIn ? "/doctors" : "/auth/signup"}>
+                  <button style={{ background: "#0066CC", color: "#fff", border: "none", borderRadius: 100, padding: "14px 28px", fontSize: 16, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 8px 24px rgba(0,102,204,.35)", transition: "all .2s" }}
+                    onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-2px)")}
+                    onMouseLeave={e => (e.currentTarget.style.transform = "none")}>
+                    Book a Specialist <ArrowRight style={{ width: 18, height: 18 }} />
+                  </button>
+                </Link>
+                <Link href="/doctors">
+                  <button style={{ background: "#fff", color: "#0D1B2A", border: "2px solid #E8EDF5", borderRadius: 100, padding: "14px 28px", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all .2s" }}>
+                    <PlayCircle style={{ width: 18, height: 18, color: "#FF6B35" }} /> How It Works
+                  </button>
+                </Link>
+              </div>
+
+              <div style={{ display: "flex", gap: 28 }}>
+                {[{ val: "2M+", lbl: "Patients" }, { val: "500+", lbl: "Specialists" }, { val: "4.9★", lbl: "App Rating" }].map((s, i) => (
+                  <div key={i}>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: "#0D1B2A" }}>{s.val}</div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "#888" }}>{s.lbl}</div>
+                  </div>
+                ))}
+              </div>
             </motion.div>
-          </motion.div>
+
+            {/* Right: Offers Carousel + Doctor Card */}
+            <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} style={{ flex: "1 1 480px", display: "flex", flexDirection: "column", gap: 16, paddingBottom: 24 }}>
+              {/* Offer Card Switcher */}
+              <div style={{ position: "relative", height: 170 }}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeOffer}
+                    initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
+                    transition={{ duration: .35 }}
+                    className="offer-card"
+                    style={{ background: `linear-gradient(135deg, ${OFFERS[activeOffer].color.replace("from-", "").replace("to-", "")})`, position: "absolute", inset: 0 }}
+                  >
+                    <div style={{ position: "absolute", top: -30, right: -30, width: 140, height: 140, background: "rgba(255,255,255,.12)", borderRadius: "50%" }} />
+                    <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, background: "rgba(255,255,255,.08)", borderRadius: "50%" }} />
+                    <div style={{ position: "relative", zIndex: 2 }}>
+                      <div style={{ display: "inline-block", background: "rgba(255,255,255,.25)", borderRadius: 100, padding: "3px 12px", fontSize: 12, fontWeight: 800, marginBottom: 8 }}>{OFFERS[activeOffer].badge}</div>
+                      <div style={{ fontSize: 13, fontWeight: 800, opacity: .85, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>{OFFERS[activeOffer].tag}</div>
+                      <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 4 }}>{OFFERS[activeOffer].title}</div>
+                      <div style={{ fontSize: 14, opacity: .85 }}>{OFFERS[activeOffer].sub}</div>
+                      <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                        Claim Offer <ArrowRight style={{ width: 14, height: 14 }} />
+                      </div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+                <div style={{ position: "absolute", bottom: 12, right: 16, display: "flex", gap: 4, zIndex: 10 }}>
+                  {OFFERS.map((_, i) => (
+                    <div key={i} onClick={() => setActiveOffer(i)} style={{ width: i === activeOffer ? 20 : 6, height: 6, borderRadius: 100, background: i === activeOffer ? "#fff" : "rgba(255,255,255,.4)", cursor: "pointer", transition: "all .3s" }} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Live Consult Widget */}
+              <div style={{ background: "#fff", borderRadius: 20, padding: "18px 20px", border: "1.5px solid #E8EDF5", display: "flex", gap: 16, alignItems: "center" }}>
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC22,#00A65122)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👩‍⚕️</div>
+                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, background: "#00A651", borderRadius: "50%", border: "2px solid #fff" }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#1a1a2e" }}>Dr. Priya Sharma is online</div>
+                  <div style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>Sports Physio • 12 yrs exp • ⭐ 4.9</div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button style={{ flex: 1, background: "#0066CC", color: "#fff", border: "none", borderRadius: 100, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Video Call</button>
+                    <button style={{ flex: 1, background: "#F4F6FB", color: "#333", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Chat Now</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Stats Row */}
+              <div style={{ display: "flex", gap: 12 }}>
+                {[{ icon: "⏱", label: "Avg Response", val: "< 3 min" }, { icon: "🏥", label: "Cities", val: "200+" }, { icon: "💚", label: "Satisfaction", val: "98%" }].map((s, i) => (
+                  <div key={i} style={{ flex: 1, background: "#fff", borderRadius: 16, padding: "14px 12px", border: "1.5px solid #E8EDF5", textAlign: "center" }}>
+                    <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
+                    <div style={{ fontSize: 16, fontWeight: 900, color: "#0D1B2A" }}>{s.val}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#888" }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Specialty Chips Row */}
+        <div style={{ background: "#fff", borderTop: "1.5px solid #E8EDF5", marginTop: 0 }}>
+          <div style={{ maxWidth: 1320, margin: "0 auto", padding: "16px 24px", display: "flex", gap: 10, overflowX: "auto", alignItems: "center" }} className="scroll-x">
+            <span style={{ fontSize: 12, fontWeight: 800, color: "#888", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: ".06em", marginRight: 8 }}>Find by:</span>
+            {SPECIALTIES.map((sp, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap", fontSize: 13, fontWeight: 700, color: "#333", transition: "all .2s", flexShrink: 0 }}
+                onMouseEnter={e => { (e.currentTarget.style.background = "#EBF4FF"); (e.currentTarget.style.borderColor = "#0066CC"); (e.currentTarget.style.color = "#0066CC") }}
+                onMouseLeave={e => { (e.currentTarget.style.background = "#F4F6FB"); (e.currentTarget.style.borderColor = "#E8EDF5"); (e.currentTarget.style.color = "#333") }}>
+                <span style={{ fontSize: 18 }}>{sp.icon}</span> {sp.label}
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* MARQUEE TRUST BAR */}
+      <div style={{ background: "#0066CC", padding: "12px 0", overflow: "hidden" }}>
+        <div className="marquee-track">
+          {[...Array(2)].map((_, ri) =>
+            ["✅ NABH Certified Partners", "🚀 Same-Day Appointments Available", "🏥 1500+ Partner Clinics", "💳 EMI Options Available", "🔒 100% Secure Payments", "⭐ 4.9 App Store Rating", "🌍 Pan-India Network", "📱 Download App: 10M+ Downloads"].map((t, i) => (
+              <div key={`${ri}-${i}`} style={{ padding: "0 40px", color: "#fff", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap", opacity: .9 }}>{t}</div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* SERVICES SECTION */}
+      <section style={{ padding: "64px 24px", maxWidth: 1320, margin: "0 auto", width: "100%" }}>
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div className="section-tag">Our Services</div>
+          <h2 style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 900, color: "#0D1B2A", margin: "0 0 12px", fontFamily: "'Syne', sans-serif" }}>
+            Care, Exactly How You Need It
+          </h2>
+          <p style={{ fontSize: 17, color: "#64748B", maxWidth: 520, margin: "0 auto" }}>
+            4 flexible pathways to recovery — choose what works best for you.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
+          {SERVICES.map((s, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * .1, duration: .45 }} className="service-card">
+              <div style={{ width: 56, height: 56, background: s.bg, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <s.icon style={{ width: 26, height: 26, color: s.color }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#0D1B2A", marginBottom: 6 }}>{s.title}</div>
+                <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6 }}>{s.desc}</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div className="stat-pill" style={{ background: s.bg, color: s.color }}>{s.stat}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 700, color: s.color, cursor: "pointer" }}>
+                  Book <ArrowRight style={{ width: 14, height: 14 }} />
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      {/* Trust Bar */}
-      <section className="py-12 border-y border-slate-200 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/30 backdrop-blur-md">
-        <div className="container mx-auto text-center px-4">
-          <p className="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-6">Trusted by 50+ Specialized Physiotherapists</p>
-          <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-            <div className="text-xl font-bold font-mono tracking-tighter">NEURO<span className="text-indigo-600">REHAB</span></div>
-            <div className="text-xl font-bold font-mono tracking-tighter">ORTHO<span className="text-emerald-500">CARE</span></div>
-            <div className="text-xl font-bold font-mono tracking-tighter">SPINE<span className="text-indigo-600">FLEX</span></div>
-            <div className="text-xl font-bold font-mono tracking-tighter">ELITE<span className="text-emerald-500">PHYSIO</span></div>
+      {/* DOCTORS SECTION */}
+      <section style={{ padding: "0 24px 64px", maxWidth: 1320, margin: "0 auto", width: "100%" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32, flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <div className="section-tag">Top Specialists</div>
+            <h2 style={{ fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 900, color: "#0D1B2A", margin: "4px 0 0", fontFamily: "'Syne', sans-serif" }}>
+              Consult Our Best Doctors
+            </h2>
+          </div>
+          <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#EBF4FF", color: "#0066CC", border: "none", borderRadius: 100, padding: "10px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+            View All 500+ Doctors <ArrowRight style={{ width: 14, height: 14 }} />
+          </button>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+          {DOCTORS.map((doc, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * .1 }} className="doc-card">
+              <div style={{ display: "flex", gap: 14, marginBottom: 14 }}>
+                <div style={{ width: 60, height: 60, borderRadius: "50%", background: "linear-gradient(135deg,#EBF4FF,#E6F7EE)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, flexShrink: 0 }}>{doc.img}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: "#0D1B2A" }}>{doc.name}</div>
+                    <div className="stat-pill" style={{ background: "#FFF4EE", color: "#FF6B35", fontSize: 10 }}>{doc.tag}</div>
+                  </div>
+                  <div style={{ fontSize: 13, color: "#0066CC", fontWeight: 700, marginTop: 2 }}>{doc.spec}</div>
+                  <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>{doc.exp} experience</div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14, padding: "10px 14px", background: "#F4F6FB", borderRadius: 12 }}>
+                <span style={{ display: "flex", gap: 2 }}>
+                  {[...Array(5)].map((_, si) => <Star key={si} style={{ width: 12, height: 12, fill: "#FFB800", color: "#FFB800" }} />)}
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#0D1B2A" }}>{doc.rating}</span>
+                <span style={{ fontSize: 12, color: "#888" }}>({doc.reviews.toLocaleString()} reviews)</span>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <span style={{ fontSize: 12, color: "#888", fontWeight: 600 }}>Starts at </span>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#00A651" }}>{doc.fee}</span>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button style={{ background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "#333" }}>
+                    <MessageCircle style={{ width: 12, height: 12, display: "inline", marginRight: 4 }} />Chat
+                  </button>
+                  <button style={{ background: "#0066CC", color: "#fff", border: "none", borderRadius: 100, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                    Book Now
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* STATS BANNER */}
+      <section style={{ background: "linear-gradient(135deg, #0D1B2A 0%, #0066CC 60%, #00A651 100%)", padding: "60px 24px", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 30% 50%, rgba(255,255,255,.06) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(255,255,255,.04) 0%, transparent 50%)" }} />
+        <div style={{ maxWidth: 1320, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 32, textAlign: "center", position: "relative", zIndex: 2 }}>
+          {STATS.map((s, i) => (
+            <motion.div key={i} initial={{ opacity: 0, scale: .7 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * .1, type: "spring", stiffness: 200 }}>
+              <div style={{ width: 52, height: 52, background: "rgba(255,255,255,.15)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+                <s.icon style={{ width: 24, height: 24, color: "#fff" }} />
+              </div>
+              <div style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 900, color: "#fff", fontFamily: "'Syne', sans-serif" }}>{s.value}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,.75)", marginTop: 4 }}>{s.label}</div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section style={{ padding: "64px 24px", maxWidth: 1320, margin: "0 auto", width: "100%" }}>
+        <div style={{ textAlign: "center", marginBottom: 52 }}>
+          <div className="section-tag">Simple Process</div>
+          <h2 style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 900, color: "#0D1B2A", margin: "0 0 12px", fontFamily: "'Syne', sans-serif" }}>
+            From Pain to Recovery in 3 Steps
+          </h2>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, position: "relative" }}>
+          <div style={{ position: "absolute", top: "30%", left: "16%", right: "16%", height: 2, background: "linear-gradient(90deg, #0066CC, #00A651)", opacity: .2, display: "none" }} className="md:block" />
+          {HOW.map((h, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * .15 }}
+              style={{ background: "#fff", borderRadius: 24, padding: 32, border: "1.5px solid #E8EDF5", textAlign: "center", position: "relative" }}>
+              <div style={{ position: "absolute", top: 20, right: 24, fontSize: 48, fontWeight: 900, color: "#F4F6FB", lineHeight: 1, fontFamily: "'Syne', sans-serif" }}>{h.step}</div>
+              <div style={{ width: 68, height: 68, borderRadius: "50%", background: `${h.color}18`, border: `2px solid ${h.color}30`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+                <h.icon style={{ width: 30, height: 30, color: h.color }} />
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#0D1B2A", marginBottom: 10 }}>{h.title}</div>
+              <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.7 }}>{h.desc}</div>
+              {i < HOW.length - 1 && (
+                <div style={{ position: "absolute", right: -12, top: "50%", transform: "translateY(-50%)", width: 24, height: 24, background: "#fff", border: "1.5px solid #E8EDF5", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
+                  <ChevronRight style={{ width: 14, height: 14, color: "#0066CC" }} />
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* WHY US */}
+      <section style={{ background: "#fff", padding: "64px 24px" }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto" }}>
+          <div style={{ display: "flex", gap: 64, alignItems: "center", flexWrap: "wrap" }}>
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} style={{ flex: "1 1 400px" }}>
+              <div className="section-tag">Why PhysioNow?</div>
+              <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 900, color: "#0D1B2A", margin: "8px 0 16px", fontFamily: "'Syne', sans-serif" }}>
+                India's Most Trusted<br />Recovery Platform
+              </h2>
+              <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 28 }}>
+                We combine cutting-edge technology with compassionate care to ensure every patient gets the best possible outcome — faster than any traditional approach.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {[
+                  { icon: BadgeCheck, title: "Verified & Certified Specialists", desc: "Every doctor is NABH-verified, background-checked, and peer-reviewed.", color: "#0066CC" },
+                  { icon: Shield, title: "Safe & Secure Platform", desc: "End-to-end encrypted consultations. Your data stays private.", color: "#00A651" },
+                  { icon: Clock, title: "Same-Day Appointments", desc: "In emergencies, reach a physiotherapist within 3 hours.", color: "#FF6B35" },
+                  { icon: RefreshCcw, title: "Free Follow-up Sessions", desc: "Not satisfied? Get a re-consult at absolutely no extra charge.", color: "#9B59B6" },
+                ].map((f, i) => (
+                  <div key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 12, background: `${f.color}18`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <f.icon style={{ width: 20, height: 20, color: f.color }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 800, color: "#0D1B2A", marginBottom: 2 }}>{f.title}</div>
+                      <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.6 }}>{f.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} style={{ flex: "1 1 360px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              {[
+                { icon: "🏆", title: "Best Rehab Platform", sub: "HealthTech Awards 2024", bg: "#FFF9E6" },
+                { icon: "📱", title: "Top App Award", sub: "Google Play Store 2024", bg: "#E6F7EE" },
+                { icon: "🌟", title: "ISO 9001 Certified", sub: "Quality Management", bg: "#EBF4FF" },
+                { icon: "🤝", title: "50+ Hospital Partners", sub: "Nationwide Network", bg: "#F3EAF9" },
+              ].map((a, i) => (
+                <motion.div key={i} whileHover={{ scale: 1.04 }} style={{ background: a.bg, borderRadius: 20, padding: 24, textAlign: "center", cursor: "pointer" }}>
+                  <div style={{ fontSize: 36, marginBottom: 10 }}>{a.icon}</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: "#0D1B2A", marginBottom: 4 }}>{a.title}</div>
+                  <div style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>{a.sub}</div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Services */}
-      <section className="py-24 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight">Our Care Pathways</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { icon: Activity, title: "Online Consultation", desc: "Expert assessment and triage from anywhere via high-quality video sessions." },
-              { icon: Heart, title: "Physical Therapy", desc: "In-clinic advanced equipment and hands-on manipulation for rapid recovery." },
-              { icon: HomeIcon, title: "At-Home Care", desc: "Specialists come to you for comfortable, effective long-term rehabilitation." }
-            ].map((s, i) => (
-              <motion.div 
-                key={i}
-                whileHover={{ scale: 1.03, y: -5 }}
-                className="p-8 rounded-[2rem] bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] transition-all"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center mb-6 text-indigo-600 dark:text-indigo-400 shadow-inner">
-                  <s.icon className="w-7 h-7" />
+      {/* TESTIMONIALS */}
+      <section style={{ padding: "64px 24px", background: "#F4F6FB" }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 44 }}>
+            <div className="section-tag">Real Stories</div>
+            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 900, color: "#0D1B2A", margin: "0 0 10px", fontFamily: "'Syne', sans-serif" }}>
+              2 Million Patients Can't Be Wrong
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
+            {TESTIMONIALS.map((t, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * .1 }} className="testi-card">
+                <div style={{ display: "flex", gap: 3, marginBottom: 12 }}>
+                  {[...Array(t.rating)].map((_, si) => <Star key={si} style={{ width: 16, height: 16, fill: "#FFB800", color: "#FFB800" }} />)}
                 </div>
-                <h3 className="text-xl font-bold mb-3">{s.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 leading-relaxed font-medium">{s.desc}</p>
+                <p style={{ fontSize: 15, color: "#334155", lineHeight: 1.7, fontStyle: "italic", marginBottom: 16 }}>"{t.text}"</p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC,#00A651)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16 }}>{t.name[0]}</div>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "#0D1B2A" }}>{t.name}</div>
+                      <div style={{ fontSize: 12, color: "#888", display: "flex", alignItems: "center", gap: 4 }}><MapPin style={{ width: 10, height: 10 }} />{t.loc}</div>
+                    </div>
+                  </div>
+                  <div className="stat-pill" style={{ background: "#EBF4FF", color: "#0066CC", fontSize: 10 }}>
+                    <CheckCircle style={{ width: 10, height: 10, display: "inline", marginRight: 3 }} />{t.tag}
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* APP DOWNLOAD */}
+      <section style={{ background: "linear-gradient(135deg,#0D1B2A,#0066CC)", padding: "60px 24px" }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 40, flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#FFB800", textTransform: "uppercase", letterSpacing: ".1em", marginBottom: 10 }}>📱 Download The App</div>
+            <h2 style={{ fontSize: "clamp(24px, 3.5vw, 40px)", fontWeight: 900, color: "#fff", margin: "0 0 12px", fontFamily: "'Syne', sans-serif" }}>
+              Healing in Your Pocket.<br />Anytime, Anywhere.
+            </h2>
+            <p style={{ fontSize: 16, color: "rgba(255,255,255,.75)", maxWidth: 460, lineHeight: 1.7 }}>
+              Join 10M+ users. Book appointments, track recovery, chat with doctors — all in one app.
+            </p>
+            <div style={{ display: "flex", gap: 14, marginTop: 24, flexWrap: "wrap" }}>
+              {["App Store", "Google Play"].map((s, i) => (
+                <button key={i} style={{ background: "rgba(255,255,255,.15)", backdropFilter: "blur(10px)", border: "1.5px solid rgba(255,255,255,.25)", borderRadius: 14, padding: "12px 22px", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, transition: "all .2s" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,.25)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,.15)")}>
+                  <span style={{ fontSize: 22 }}>{i === 0 ? "🍎" : "🤖"}</span>
+                  <div style={{ textAlign: "left" }}>
+                    <div style={{ fontSize: 10, opacity: .75, fontWeight: 600 }}>Download on the</div>
+                    <div style={{ fontSize: 16, fontWeight: 800 }}>{s}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+            {[{ icon: "⭐", val: "4.9/5", lbl: "App Rating" }, { icon: "📥", val: "10M+", lbl: "Downloads" }, { icon: "🏅", val: "#1", lbl: "Health App India" }].map((s, i) => (
+              <div key={i} style={{ background: "rgba(255,255,255,.1)", borderRadius: 20, padding: "24px 28px", textAlign: "center", border: "1.5px solid rgba(255,255,255,.15)" }}>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>{s.icon}</div>
+                <div style={{ fontSize: 24, fontWeight: 900, color: "#fff" }}>{s.val}</div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,.65)", fontWeight: 600, marginTop: 4 }}>{s.lbl}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section style={{ padding: "64px 24px", background: "#fff" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          <motion.div initial={{ opacity: 0, scale: .95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+            style={{ background: "linear-gradient(135deg,#EBF4FF,#E6F7EE)", borderRadius: 32, padding: "56px 48px", textAlign: "center", border: "1.5px solid #D0E8FF", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, background: "rgba(0,102,204,.06)", borderRadius: "50%" }} />
+            <div style={{ position: "absolute", bottom: -30, left: -30, width: 120, height: 120, background: "rgba(0,166,81,.06)", borderRadius: "50%" }} />
+            <div style={{ position: "relative", zIndex: 2 }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🚀</div>
+              <h2 style={{ fontSize: "clamp(26px, 4vw, 40px)", fontWeight: 900, color: "#0D1B2A", marginBottom: 14, fontFamily: "'Syne', sans-serif" }}>
+                Start Your Recovery Today
+              </h2>
+              <p style={{ fontSize: 17, color: "#475569", maxWidth: 480, margin: "0 auto 28px", lineHeight: 1.7 }}>
+                Over 2 million patients have found their path to recovery. Your journey begins with one tap.
+              </p>
+              <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+                <Link href={isLoggedIn ? "/doctors" : "/auth/signup"}>
+                  <button style={{ background: "#0066CC", color: "#fff", border: "none", borderRadius: 100, padding: "15px 32px", fontSize: 16, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 8px 24px rgba(0,102,204,.3)", transition: "all .2s" }}>
+                    {isLoggedIn ? "Find a Specialist" : "Get Started — It's Free"} <ArrowRight style={{ width: 18, height: 18 }} />
+                  </button>
+                </Link>
+                <Link href="/doctors">
+                  <button style={{ background: "#fff", color: "#0D1B2A", border: "2px solid #E8EDF5", borderRadius: 100, padding: "15px 32px", fontSize: 16, fontWeight: 700, cursor: "pointer", transition: "all .2s" }}>
+                    Browse Specialists
+                  </button>
+                </Link>
+              </div>
+              <div style={{ display: "flex", gap: 24, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
+                {["No credit card required", "Cancel anytime", "NABH Certified Doctors"].map((t, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, color: "#64748B" }}>
+                    <CheckCircle style={{ width: 14, height: 14, color: "#00A651" }} /> {t}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ background: "#0D1B2A", color: "rgba(255,255,255,.7)", padding: "48px 24px 24px" }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 36, marginBottom: 40 }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#0066CC,#00A651)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Activity style={{ width: 16, height: 16, color: "#fff" }} />
+                </div>
+                <span style={{ fontSize: 16, fontWeight: 900, color: "#fff", fontFamily: "'Syne', sans-serif" }}>PhysioNow</span>
+              </div>
+              <p style={{ fontSize: 13, lineHeight: 1.7 }}>India's #1 physiotherapy & rehabilitation platform. Connecting patients with expert specialists nationwide.</p>
+            </div>
+            {[
+              { title: "Services", links: ["Online Consultation", "At-Home Physio", "In-Clinic Sessions", "Recovery Kits", "PhysioPass"] },
+              { title: "Specialties", links: ["Sports Injury", "Neuro Rehab", "Ortho Physio", "Pain Management", "Geriatric Care"] },
+              { title: "Company", links: ["About Us", "Careers", "Press", "Partners", "Contact"] },
+            ].map((col, i) => (
+              <div key={i}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: "#fff", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12 }}>{col.title}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {col.links.map((l, li) => (
+                    <div key={li} style={{ fontSize: 13, cursor: "pointer", transition: "color .2s" }}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "")}>
+                      {l}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ borderTop: "1px solid rgba(255,255,255,.1)", paddingTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+            <div style={{ fontSize: 13 }}>© 2025 PhysioNow. All rights reserved. | <span style={{ cursor: "pointer" }}>Privacy Policy</span> | <span style={{ cursor: "pointer" }}>Terms of Service</span></div>
+            <div style={{ display: "flex", gap: 14 }}>
+              {["🐦", "📘", "📸", "💼"].map((s, i) => (
+                <div key={i} style={{ width: 32, height: 32, background: "rgba(255,255,255,.1)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 14, transition: "background .2s" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,.2)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,.1)")}>
+                  {s}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }

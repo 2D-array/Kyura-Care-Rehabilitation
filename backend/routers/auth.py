@@ -1,50 +1,79 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
-from supabase import Client
+from fastapi import APIRouter, Depends, HTTPException
 from dependencies import get_supabase_client, get_current_user
 from database import supabase_admin
+from schemas import SyncProfileRequest
+
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
 
-@router.post("/sync-profile")
-def sync_profile(
-    role: str = Body(..., embed=True),
-    first_name: str = Body(..., embed=True),
-    last_name: str = Body(..., embed=True),
-    license_number: str = Body(None, embed=True),
-    user = Depends(get_current_user)
+
+@router.get("/me")
+def get_current_profile(
+    user=Depends(get_current_user)
 ):
+    """Unified endpoint — returns full merged profile regardless of role."""
     if not supabase_admin:
         raise HTTPException(status_code=500, detail="Admin client not configured")
-    
+    try:
+        profile_res = supabase_admin.table("profiles").select("*").eq("id", user.id).execute()
+        if not profile_res.data:
+            raise HTTPException(status_code=404, detail="Profile not found. Please sync your profile.")
+
+        profile = profile_res.data[0]
+        role = profile.get("role")
+
+        if role == "doctor":
+            doc_res = supabase_admin.table("doctors").select("*").eq("id", user.id).execute()
+            doctor_data = doc_res.data[0] if doc_res.data else {}
+            return {**profile, **doctor_data, "role": "doctor"}
+        else:
+            pat_res = supabase_admin.table("patients").select("*").eq("id", user.id).execute()
+            patient_data = pat_res.data[0] if pat_res.data else {}
+            return {**profile, **patient_data, "role": "patient"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/sync-profile")
+def sync_profile(
+    data: SyncProfileRequest,
+    user=Depends(get_current_user)
+):
+    """Creates or updates the profile row after signup/login."""
+    if not supabase_admin:
+        raise HTTPException(status_code=500, detail="Admin client not configured")
+
+    role = data.role
     if role not in ["patient", "doctor"]:
-        raise HTTPException(status_code=400, detail="Invalid role")
+        raise HTTPException(status_code=400, detail="Invalid role. Must be 'patient' or 'doctor'.")
 
     try:
-        # Check if profile exists
-        res = supabase_admin.table("profiles").select("*").eq("id", user.id).execute()
-        if not res.data:
-            email = user.email or f"{user.id}@anonymous.com"
-            
-            profile_data = {
+        email = user.email or f"{user.id}@anonymous.com"
+
+        # Upsert profile row
+        profile_data = {
+            "id": user.id,
+            "role": role,
+            "first_name": data.first_name,
+            "last_name": data.last_name,
+            "email": email,
+        }
+        supabase_admin.table("profiles").upsert(profile_data).execute()
+
+        # Upsert role-specific row
+        if role == "doctor":
+            supabase_admin.table("doctors").upsert({
                 "id": user.id,
-                "role": role,
-                "first_name": first_name,
-                "last_name": last_name,
-                "email": email
-            }
-            supabase_admin.table("profiles").insert(profile_data).execute()
-            
-            if role == "doctor":
-                supabase_admin.table("doctors").insert({
-                    "id": user.id,
-                    "specialty": "General",
-                    "license_number": license_number or "PENDING"
-                }).execute()
-            else:
-                supabase_admin.table("patients").insert({
-                    "id": user.id
-                }).execute()
-                
-        return {"status": "success", "message": "Profile synced"}
+                "specialty": "General",
+                "license_number": data.license_number or "PENDING"
+            }).execute()
+        else:
+            supabase_admin.table("patients").upsert({
+                "id": user.id
+            }).execute()
+
+        return {"status": "success", "message": "Profile synced successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

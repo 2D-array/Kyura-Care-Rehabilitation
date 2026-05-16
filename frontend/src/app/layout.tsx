@@ -4,12 +4,13 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/sonner";
+import { UserProvider } from "@/context/UserContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Physiotherapy Recovery Marketplace",
-  description: "Premium post-accident rehabilitation and long-term recovery.",
+  title: "CuraReb — Physiotherapy Recovery Marketplace",
+  description: "Premium post-accident rehabilitation and long-term recovery. Find verified physiotherapists for your needs.",
 };
 
 export default function RootLayout({
@@ -26,9 +27,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
-          {children}
-          <Toaster position="top-center" richColors />
+          <UserProvider>
+            <Navbar />
+            {children}
+            <Toaster position="top-center" richColors />
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>
