@@ -1,117 +1,3 @@
-// "use client"
-
-// import Link from "next/link";
-// import { ModeToggle } from "./mode-toggle";
-// import { Button } from "./ui/button";
-// import { Avatar, AvatarFallback } from "./ui/avatar";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "./ui/dropdown-menu";
-// import { User, Settings, LogOut, LayoutDashboard, Search } from "lucide-react";
-// import { useUser } from "@/context/UserContext";
-// import { useRouter } from "next/navigation";
-
-// export function Navbar() {
-//   const { user, profile, loading, logout } = useUser()
-//   const router = useRouter()
-
-//   const getInitials = () => {
-//     if (profile?.first_name && profile?.last_name) {
-//       return `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
-//     }
-//     if (user?.email) return user.email[0].toUpperCase()
-//     return "U"
-//   }
-
-//   return (
-//     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-//       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-//         <Link href="/" className="flex items-center space-x-2">
-//           <span className="text-2xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400">CuraReb</span>
-//         </Link>
-//         <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
-//           <Link href="/doctors" className="transition-colors hover:text-indigo-600 dark:hover:text-indigo-400 text-foreground/80">
-//             Find a Specialist
-//           </Link>
-//           <Link href="/treatments" className="transition-colors hover:text-indigo-600 dark:hover:text-indigo-400 text-foreground/80">
-//             Treatments
-//           </Link>
-//           <Link href="/#how-it-works" className="transition-colors hover:text-indigo-600 dark:hover:text-indigo-400 text-foreground/80">
-//             How it Works
-//           </Link>
-//         </nav>
-//         <div className="flex items-center space-x-3">
-//           <ModeToggle />
-//           {!loading && user ? (
-//             <DropdownMenu>
-//               <DropdownMenuTrigger asChild>
-//                 <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
-//                   <Avatar className="h-10 w-10 border-2 border-indigo-500/30">
-//                     <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-sm">
-//                       {getInitials()}
-//                     </AvatarFallback>
-//                   </Avatar>
-//                 </Button>
-//               </DropdownMenuTrigger>
-//               <DropdownMenuContent className="w-60 rounded-2xl p-2" align="end" forceMount>
-//                 <DropdownMenuLabel className="font-normal px-2 py-2">
-//                   <div className="flex flex-col space-y-1">
-//                     <p className="text-sm font-bold leading-none">
-//                       {profile?.first_name || "User"} {profile?.last_name || ""}
-//                     </p>
-//                     <p className="text-xs leading-none text-muted-foreground capitalize">
-//                       {profile?.role || user.email}
-//                     </p>
-//                   </div>
-//                 </DropdownMenuLabel>
-//                 <DropdownMenuSeparator />
-//                 <DropdownMenuItem onClick={() => router.push("/dashboard")} className="cursor-pointer rounded-xl gap-2">
-//                   <LayoutDashboard className="h-4 w-4" />
-//                   <span>Dashboard</span>
-//                 </DropdownMenuItem>
-//                 <DropdownMenuItem onClick={() => router.push("/dashboard/profile")} className="cursor-pointer rounded-xl gap-2">
-//                   <User className="h-4 w-4" />
-//                   <span>My Profile</span>
-//                 </DropdownMenuItem>
-//                 <DropdownMenuItem onClick={() => router.push("/doctors")} className="cursor-pointer rounded-xl gap-2">
-//                   <Search className="h-4 w-4" />
-//                   <span>Find Doctors</span>
-//                 </DropdownMenuItem>
-//                 <DropdownMenuItem onClick={() => router.push("/dashboard/profile?tab=settings")} className="cursor-pointer rounded-xl gap-2">
-//                   <Settings className="h-4 w-4" />
-//                   <span>Settings</span>
-//                 </DropdownMenuItem>
-//                 <DropdownMenuSeparator />
-//                 <DropdownMenuItem onClick={logout} className="cursor-pointer rounded-xl gap-2 text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/30">
-//                   <LogOut className="h-4 w-4" />
-//                   <span>Log out</span>
-//                 </DropdownMenuItem>
-//               </DropdownMenuContent>
-//             </DropdownMenu>
-//           ) : !loading ? (
-//             <>
-//               <Link href="/auth/login">
-//                 <Button variant="ghost" className="hidden sm:inline-flex text-foreground/80 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-//                   Log In
-//                 </Button>
-//               </Link>
-//               <Link href="/auth/signup">
-//                 <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-semibold px-6 shadow-md hover:shadow-lg transition-all">
-//                   Register
-//                 </Button>
-//               </Link>
-//             </>
-//           ) : null}
-//         </div>
-//       </div>
-//     </header>
-//   )
-// }
 "use client"
 
 import { useEffect, useState, useRef } from "react"
@@ -205,272 +91,259 @@ export function Navbar() {
   /* ── render ── */
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap');
+      <div className="sticky top-0 z-[100] flex flex-col w-full">
+        {/* ── TOP ANNOUNCEMENT BAR ── */}
+        <div className="bg-indigo-600 text-white py-1.5 text-xs font-bold text-center tracking-wide z-[110] relative">
+          🎉 New user? First consultation FREE —{" "}
+          <Link href="/auth/signup" className="text-yellow-400 underline decoration-yellow-400/50 hover:decoration-yellow-400 transition-colors">Claim Now</Link>
+          &nbsp;|&nbsp; 🚚 Free delivery on recovery kits above ₹499
+        </div>
 
-        .pn-nav *   { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .pn-navlink { font-size:13px; font-weight:700; color:#334155; transition:color .18s; cursor:pointer; white-space:nowrap; text-decoration:none; padding:4px 0; border-bottom:2px solid transparent; }
-        .pn-navlink:hover, .pn-navlink.active { color:#0066CC; border-bottom-color:#0066CC; }
-        .pn-pill    { display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;border:none;text-decoration:none; }
-        .pn-icon-btn{ width:38px;height:38px;border-radius:50%;background:#F4F6FB;border:1.5px solid #E8EDF5;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;position:relative; }
-        .pn-icon-btn:hover { background:#EBF4FF; border-color:#0066CC; }
-        .pn-subnav-chip { display:flex;align-items:center;gap:6px;padding:7px 14px;cursor:pointer;white-space:nowrap;font-size:13px;font-weight:700;color:#475569;border-bottom:2px solid transparent;transition:all .18s;text-decoration:none; }
-        .pn-subnav-chip:hover { color:#0066CC; border-bottom-color:#0066CC; }
-        .pn-subnav-chip.active { color:#0066CC; border-bottom-color:#0066CC; }
-        .pn-search-sug { display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;transition:background .14s; font-size:14px; font-weight:500; color:#1a1a2e; }
-        .pn-search-sug:hover { background:#F0F7FF; }
-        .pn-dd-item { display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#334155;transition:background .14s;text-decoration:none; }
-        .pn-dd-item:hover { background:#F0F7FF; color:#0066CC; }
-        .pn-dd-item.danger { color:#DC2626; }
-        .pn-dd-item.danger:hover { background:#FEF2F2; color:#DC2626; }
-        .pn-badge { position:absolute;top:-4px;right:-4px;background:#FF6B35;color:#fff;border-radius:100px;width:16px;height:16px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff; }
-        .pn-live-dot { width:8px;height:8px;background:#00A651;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0; }
-        .pn-mobile-link { display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F1F5F9;font-size:16px;font-weight:700;color:#1a1a2e;text-decoration:none;cursor:pointer; }
-        .pn-mobile-link:hover { color:#0066CC; }
-        @keyframes pn-slide-down { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-        .pn-dropdown-anim { animation: pn-slide-down .2s ease; }
-        .pn-search-overlay { position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:200;backdrop-filter:blur(4px); }
-        .pn-search-panel { position:fixed;top:0;left:0;right:0;background:#fff;z-index:201;border-bottom:2px solid #E8EDF5;box-shadow:0 20px 60px rgba(0,0,0,.12); }
-      `}</style>
+        {/* ── MAIN NAVBAR ── */}
+        <header
+          className={`w-full border-b transition-all duration-250 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-slate-200 dark:border-slate-800 ${
+            scrolled ? "shadow-md shadow-black/5 dark:shadow-black/20" : ""
+          }`}
+        >
+          {/* ── ROW 1: Logo | Search | Actions ── */}
+          <div className="max-w-[1320px] mx-auto px-5 flex items-center gap-4 h-16">
+            
+            {/* Logo */}
+            <Link href="/" className="flex-shrink-0 flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+              <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-emerald-500 rounded-xl flex items-center justify-center shadow-sm">
+                <Activity className="w-[18px] h-[18px] text-white" />
+              </div>
+              <div className="flex flex-col justify-center">
+                <div className="text-[17px] font-black text-indigo-600 dark:text-indigo-400 leading-none tracking-tight font-sans">PhysioNow</div>
+                <div className="text-[9px] font-extrabold text-emerald-600 dark:text-emerald-500 tracking-widest mt-0.5">REHAB PLATFORM</div>
+              </div>
+            </Link>
 
-      {/* ── TOP ANNOUNCEMENT BAR ── */}
-      <div style={{ background: "#0066CC", color: "#fff", padding: "7px 0", fontSize: 12, fontWeight: 700, textAlign: "center", letterSpacing: ".01em", zIndex: 110, position: "relative" }}>
-        🎉 New user? First consultation FREE —{" "}
-        <Link href="/auth/signup" style={{ color: "#FFD700", textDecoration: "underline" }}>Claim Now</Link>
-        &nbsp;|&nbsp; 🚚 Free delivery on recovery kits above ₹499
-      </div>
+            {/* Desktop nav links */}
+            <nav className="hidden md:flex items-center gap-6 ml-4">
+              {NAV_LINKS.map((l, i) => (
+                <Link 
+                  key={i} 
+                  href={l.href} 
+                  className={`text-[13px] font-bold py-1 whitespace-nowrap border-b-2 transition-colors ${
+                    isActive(l.href) 
+                      ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400" 
+                      : "text-slate-700 dark:text-slate-300 border-transparent hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-600 dark:hover:border-indigo-400"
+                  }`}
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
 
-      {/* ── MAIN NAVBAR ── */}
-      <header
-        className="pn-nav"
-        style={{
-          position: "sticky", top: 0, zIndex: 100,
-          background: "rgba(255,255,255,.97)",
-          borderBottom: "1.5px solid #E8EDF5",
-          backdropFilter: "blur(14px)",
-          transition: "box-shadow .25s",
-          boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,.09)" : "none",
-        }}
-      >
-        {/* ── ROW 1: Logo | Search | Actions ── */}
-        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", gap: 16, height: 64 }}>
-
-          {/* Logo */}
-          <Link href="/" style={{ textDecoration: "none", flexShrink: 0, display: "flex", alignItems: "center", gap: 9 }}>
-            <div style={{ width: 36, height: 36, background: "linear-gradient(135deg,#0066CC,#00A651)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Activity style={{ width: 18, height: 18, color: "#fff" }} />
-            </div>
-            <div>
-              <div style={{ fontSize: 17, fontWeight: 900, color: "#0066CC", lineHeight: 1, fontFamily: "'Syne',sans-serif" }}>PhysioNow</div>
-              <div style={{ fontSize: 9, fontWeight: 800, color: "#00A651", letterSpacing: ".07em" }}>REHAB PLATFORM</div>
-            </div>
-          </Link>
-
-          {/* Desktop nav links */}
-          <nav style={{ display: "flex", alignItems: "center", gap: 24, marginLeft: 8 }} className="hidden md:flex">
-            {NAV_LINKS.map((l, i) => (
-              <Link key={i} href={l.href} className={`pn-navlink${isActive(l.href) ? " active" : ""}`}>{l.label}</Link>
-            ))}
-          </nav>
-
-          {/* Search bar — desktop */}
-          <div
-            onClick={() => setSearchOpen(true)}
-            style={{ flex: 1, maxWidth: 460, background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "0 16px", height: 42, display: "flex", alignItems: "center", gap: 10, cursor: "text", transition: "all .18s" }}
-            onMouseEnter={e => { (e.currentTarget.style.borderColor = "#0066CC"); (e.currentTarget.style.background = "#EBF4FF") }}
-            onMouseLeave={e => { (e.currentTarget.style.borderColor = "#E8EDF5"); (e.currentTarget.style.background = "#F4F6FB") }}
-            className="hidden md:flex"
-          >
-            <Search style={{ width: 15, height: 15, color: "#94A3B8", flexShrink: 0 }} />
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#94A3B8" }}>Search doctors, conditions, specialties…</span>
-          </div>
-
-          {/* Right actions */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
-
-            {/* Mobile search */}
-            <button className="pn-icon-btn md:hidden" onClick={() => setSearchOpen(true)}>
-              <Search style={{ width: 16, height: 16, color: "#334155" }} />
+            {/* Search bar — desktop */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="hidden md:flex flex-1 max-w-[460px] bg-slate-50 dark:bg-slate-900 border-1.5 border-slate-200 dark:border-slate-800 rounded-full px-4 h-10 items-center gap-2.5 text-left transition-colors hover:border-indigo-600 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 group"
+            >
+              <Search className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 flex-shrink-0 transition-colors" />
+              <span className="text-[13px] font-medium text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors truncate">Search doctors, conditions, specialties…</span>
             </button>
 
-            {/* Cart */}
-            <div className="pn-icon-btn" style={{ display: "none" }} /* show if you have cart page */>
-              <ShoppingCart style={{ width: 16, height: 16, color: "#334155" }} />
-              {cartCount > 0 && <div className="pn-badge">{cartCount}</div>}
-            </div>
+            {/* Right actions */}
+            <div className="flex items-center gap-2.5 ml-auto">
+              
+              {/* Mobile search */}
+              <button 
+                className="md:hidden w-9 h-9 rounded-full bg-slate-50 dark:bg-slate-900 border-1.5 border-slate-200 dark:border-slate-800 flex items-center justify-center transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/40 hover:border-indigo-600 dark:hover:border-indigo-500"
+                onClick={() => setSearchOpen(true)}
+              >
+                <Search className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+              </button>
 
-            {/* Notifications (logged-in only) */}
-            {user && (
-              <div className="pn-icon-btn">
-                <Bell style={{ width: 16, height: 16, color: "#334155" }} />
-                <div className="pn-badge" style={{ width: 8, height: 8, top: 2, right: 2 }} />
-              </div>
-            )}
+              {/* Notifications (logged-in only) */}
+              {user && (
+                <button className="relative w-9 h-9 rounded-full bg-slate-50 dark:bg-slate-900 border-1.5 border-slate-200 dark:border-slate-800 flex items-center justify-center transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/40 hover:border-indigo-600 dark:hover:border-indigo-500">
+                  <Bell className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+                  <div className="absolute top-0.5 right-0.5 w-2 h-2 bg-orange-500 rounded-full border border-white dark:border-slate-950" />
+                </button>
+              )}
 
-            {/* Dark mode toggle */}
-            <ModeToggle />
+              {/* Dark mode toggle */}
+              <ModeToggle />
 
-            {/* ── AUTH SECTION ── */}
-            {!loading && user ? (
-              /* ── Logged in: avatar dropdown ── */
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 8, borderRadius: 100, padding: "4px 10px 4px 4px", transition: "background .18s" }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "#F4F6FB")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "none")}>
-                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC,#00A651)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 14, border: "2px solid #E8EDF5" }}>
-                      {getInitials()}
-                    </div>
-                    <div className="hidden md:block" style={{ textAlign: "left" }}>
-                      <div style={{ fontSize: 13, fontWeight: 800, color: "#0D1B2A", lineHeight: 1.2 }}>
-                        {profile?.first_name || "User"}
-                      </div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: "#64748B", lineHeight: 1.2, textTransform: "capitalize" }}>
-                        {profile?.role || "Patient"}
-                      </div>
-                    </div>
-                    <ChevronDown style={{ width: 14, height: 14, color: "#94A3B8" }} className="hidden md:block" />
-                  </button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent
-                  align="end"
-                  style={{ width: 240, borderRadius: 20, border: "1.5px solid #E8EDF5", boxShadow: "0 20px 60px rgba(0,0,0,.12)", padding: 8, background: "#fff" }}
-                  className="pn-dropdown-anim"
-                  forceMount
-                >
-                  {/* User info header */}
-                  <div style={{ padding: "10px 12px 12px", borderBottom: "1px solid #F1F5F9", marginBottom: 6 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: 42, height: 42, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC,#00A651)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16 }}>
+              {/* ── AUTH SECTION ── */}
+              {!loading && user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-600 to-emerald-500 flex items-center justify-center text-white font-black text-sm border-2 border-slate-100 dark:border-slate-800 shadow-sm">
                         {getInitials()}
                       </div>
-                      <div>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: "#0D1B2A" }}>
-                          {profile?.first_name || "User"} {profile?.last_name || ""}
+                      <div className="hidden md:flex flex-col items-start text-left">
+                        <div className="text-[13px] font-black text-slate-900 dark:text-white leading-[1.2]">
+                          {profile?.first_name || "User"}
                         </div>
-                        <div style={{ fontSize: 12, color: "#64748B", fontWeight: 600, display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                          <span className="pn-live-dot" />
-                          {user.email}
+                        <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-[1.2] capitalize">
+                          {profile?.role || "Patient"}
+                        </div>
+                      </div>
+                      <ChevronDown className="hidden md:block w-3.5 h-3.5 text-slate-400" />
+                    </button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-60 rounded-2xl border-1.5 border-slate-200 dark:border-slate-800 shadow-xl shadow-black/5 dark:shadow-black/40 p-2 bg-white dark:bg-slate-950 animate-in slide-in-from-top-2"
+                    forceMount
+                  >
+                    <div className="p-3 border-b border-slate-100 dark:border-slate-800/60 mb-1.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-emerald-500 flex items-center justify-center text-white font-black text-base shadow-sm">
+                          {getInitials()}
+                        </div>
+                        <div className="flex-1 overflow-hidden">
+                          <div className="text-sm font-black text-slate-900 dark:text-white truncate">
+                            {profile?.first_name || "User"} {profile?.last_name || ""}
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5 truncate">
+                            <span className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
+                            <span className="truncate">{user.email}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div onClick={() => router.push("/dashboard")} className="pn-dd-item">
-                    <LayoutDashboard style={{ width: 15, height: 15 }} /> Dashboard
-                  </div>
-                  <div onClick={() => router.push("/dashboard/profile")} className="pn-dd-item">
-                    <User style={{ width: 15, height: 15 }} /> My Profile
-                  </div>
-                  <div onClick={() => router.push("/doctors")} className="pn-dd-item">
-                    <Stethoscope style={{ width: 15, height: 15 }} /> Find Doctors
-                  </div>
-                  <div onClick={() => router.push("/dashboard/profile?tab=settings")} className="pn-dd-item">
-                    <Settings style={{ width: 15, height: 15 }} /> Settings
-                  </div>
+                    <DropdownMenuItem onClick={() => router.push("/dashboard")} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                      <LayoutDashboard className="w-4 h-4" /> Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/dashboard/profile")} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                      <User className="w-4 h-4" /> My Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/doctors")} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                      <Stethoscope className="w-4 h-4" /> Find Doctors
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/dashboard/profile?tab=settings")} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                      <Settings className="w-4 h-4" /> Settings
+                    </DropdownMenuItem>
 
-                  <div style={{ borderTop: "1px solid #F1F5F9", margin: "6px 0" }} />
+                    <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-slate-800/60" />
 
-                  <div onClick={logout} className="pn-dd-item danger">
-                    <LogOut style={{ width: 15, height: 15 }} /> Log out
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <DropdownMenuItem onClick={logout} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+                      <LogOut className="w-4 h-4" /> Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
-            ) : !loading ? (
-              /* ── Logged out: Login + Register ── */
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <Link href="/auth/login" className="pn-pill hidden sm:inline-flex" style={{ background: "#F4F6FB", color: "#334155", border: "1.5px solid #E8EDF5" }}>
-                  Log In
-                </Link>
-                <Link href="/auth/signup" className="pn-pill" style={{ background: "#0066CC", color: "#fff", boxShadow: "0 4px 14px rgba(0,102,204,.3)" }}>
-                  Register Free
-                </Link>
-              </div>
-            ) : null}
+              ) : !loading ? (
+                <div className="flex items-center gap-2">
+                  <Link href="/auth/login" className="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-full text-[13px] font-bold bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-1.5 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    Log In
+                  </Link>
+                  <Link href="/auth/signup" className="inline-flex items-center justify-center px-4 py-2 rounded-full text-[13px] font-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30 transition-all">
+                    Register Free
+                  </Link>
+                </div>
+              ) : null}
 
-            {/* Mobile hamburger */}
-            <button className="pn-icon-btn md:hidden" onClick={() => setMobileOpen(o => !o)}>
-              {mobileOpen
-                ? <X style={{ width: 16, height: 16, color: "#334155" }} />
-                : <Menu style={{ width: 16, height: 16, color: "#334155" }} />}
-            </button>
+              {/* Mobile hamburger */}
+              <button 
+                className="md:hidden w-9 h-9 rounded-full bg-slate-50 dark:bg-slate-900 border-1.5 border-slate-200 dark:border-slate-800 flex items-center justify-center transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+                onClick={() => setMobileOpen(o => !o)}
+              >
+                {mobileOpen ? <X className="w-4 h-4 text-slate-700 dark:text-slate-300" /> : <Menu className="w-4 h-4 text-slate-700 dark:text-slate-300" />}
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* ── ROW 2: Sub-nav specialty chips ── */}
-        <div style={{ borderTop: "1px solid #F1F5F9", background: "#FAFBFF" }} className="hidden md:block">
-          <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 20px", display: "flex", gap: 0, overflowX: "auto" }}>
-            {SPECIALTIES.map((s, i) => (
-              <Link key={i} href={s.href} className={`pn-subnav-chip${subNavActive === i ? " active" : ""}`}
-                onClick={() => setSubNavActive(i)}>
-                <span style={{ fontSize: 16 }}>{s.icon}</span> {s.label}
+          {/* ── ROW 2: Sub-nav specialty chips ── */}
+          <div className="hidden md:block border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
+            <div className="max-w-[1320px] mx-auto px-5 flex overflow-x-auto no-scrollbar">
+              {SPECIALTIES.map((s, i) => (
+                <Link 
+                  key={i} 
+                  href={s.href} 
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 whitespace-nowrap text-[13px] font-bold border-b-2 transition-colors ${
+                    subNavActive === i 
+                      ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400" 
+                      : "text-slate-600 dark:text-slate-400 border-transparent hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-600 dark:hover:border-indigo-400"
+                  }`}
+                  onClick={() => setSubNavActive(i)}
+                >
+                  <span className="text-[15px]">{s.icon}</span> {s.label}
+                </Link>
+              ))}
+              <Link href="/doctors" className="flex items-center gap-1.5 px-3.5 py-1.5 ml-auto whitespace-nowrap text-[13px] font-black text-indigo-600 dark:text-indigo-400 hover:opacity-80 transition-opacity">
+                View All <ChevronRight className="w-3.5 h-3.5" />
               </Link>
-            ))}
-            <Link href="/doctors" className="pn-subnav-chip" style={{ marginLeft: "auto", color: "#0066CC", fontWeight: 800 }}>
-              View All <ChevronRight style={{ width: 13, height: 13 }} />
-            </Link>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
 
       {/* ── SEARCH OVERLAY ── */}
       <AnimatePresence>
         {searchOpen && (
           <>
             <motion.div
-              className="pn-search-overlay"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200]"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setSearchOpen(false)}
             />
             <motion.div
-              className="pn-search-panel pn-nav"
+              className="fixed top-0 left-0 right-0 bg-white dark:bg-slate-950 z-[201] border-b-2 border-slate-200 dark:border-slate-800 shadow-2xl shadow-black/10 dark:shadow-black/40"
               initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}
               transition={{ type: "spring", stiffness: 380, damping: 32 }}
             >
               {/* Search input row */}
-              <div style={{ maxWidth: 1320, margin: "0 auto", padding: "16px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-                <Search style={{ width: 20, height: 20, color: "#0066CC", flexShrink: 0 }} />
+              <div className="max-w-[1320px] mx-auto px-5 py-4 flex items-center gap-3">
+                <Search className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                 <input
                   ref={searchRef}
                   value={searchVal}
                   onChange={e => setSearchVal(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter" && searchVal) { router.push(`/doctors?q=${encodeURIComponent(searchVal)}`); setSearchOpen(false) } }}
                   placeholder="Search doctors, conditions, specialties…"
-                  style={{ flex: 1, border: "none", outline: "none", fontSize: 18, fontWeight: 600, color: "#0D1B2A", background: "transparent", fontFamily: "'Plus Jakarta Sans',sans-serif" }}
+                  className="flex-1 border-none outline-none text-lg font-semibold text-slate-900 dark:text-white bg-transparent placeholder-slate-400 dark:placeholder-slate-600"
                 />
                 {searchVal && (
-                  <button onClick={() => setSearchVal("")} style={{ background: "#F4F6FB", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-                    <X style={{ width: 14, height: 14, color: "#64748B" }} />
+                  <button 
+                    onClick={() => setSearchVal("")} 
+                    className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                   </button>
                 )}
-                <button onClick={() => setSearchOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#64748B", padding: "6px 12px", borderRadius: 8 }}>
+                <button 
+                  onClick={() => setSearchOpen(false)} 
+                  className="px-3 py-1.5 text-[13px] font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+                >
                   Cancel
                 </button>
               </div>
 
-              <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 20px 16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, borderTop: "1px solid #F1F5F9" }}>
+              <div className="max-w-[1320px] mx-auto px-5 pb-4 grid grid-cols-1 md:grid-cols-2 gap-0 border-t border-slate-100 dark:border-slate-800/60">
                 {/* Suggestions */}
-                <div>
-                  <div style={{ padding: "10px 16px 4px", fontSize: 11, fontWeight: 800, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".08em" }}>Popular Searches</div>
+                <div className="py-2">
+                  <div className="px-4 py-2 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Popular Searches</div>
                   {SEARCH_SUGGESTIONS.map((s, i) => (
-                    <div key={i} className="pn-search-sug" onClick={() => { router.push(`/doctors?q=${encodeURIComponent(s)}`); setSearchOpen(false) }}>
-                      <Search style={{ width: 13, height: 13, color: "#0066CC", flexShrink: 0 }} />
+                    <div 
+                      key={i} 
+                      className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer text-sm font-semibold text-slate-800 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors rounded-xl mx-2"
+                      onClick={() => { router.push(`/doctors?q=${encodeURIComponent(s)}`); setSearchOpen(false) }}
+                    >
+                      <Search className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
                       {s}
                     </div>
                   ))}
                 </div>
                 {/* Specialty quick picks */}
-                <div style={{ borderLeft: "1px solid #F1F5F9" }}>
-                  <div style={{ padding: "10px 16px 4px", fontSize: 11, fontWeight: 800, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".08em" }}>Browse by Specialty</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, padding: "8px 16px" }}>
+                <div className="py-2 md:border-l border-slate-100 dark:border-slate-800/60">
+                  <div className="px-4 py-2 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Browse by Specialty</div>
+                  <div className="flex flex-wrap gap-2 px-4 py-2">
                     {SPECIALTIES.map((sp, i) => (
-                      <Link key={i} href={sp.href} onClick={() => setSearchOpen(false)}
-                        style={{ display: "flex", alignItems: "center", gap: 6, background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "6px 14px", fontSize: 13, fontWeight: 700, color: "#334155", textDecoration: "none", transition: "all .15s" }}
-                        onMouseEnter={e => { (e.currentTarget.style.background = "#EBF4FF"); (e.currentTarget.style.borderColor = "#0066CC"); (e.currentTarget.style.color = "#0066CC") }}
-                        onMouseLeave={e => { (e.currentTarget.style.background = "#F4F6FB"); (e.currentTarget.style.borderColor = "#E8EDF5"); (e.currentTarget.style.color = "#334155") }}>
-                        <span style={{ fontSize: 16 }}>{sp.icon}</span> {sp.label}
+                      <Link 
+                        key={i} 
+                        href={sp.href} 
+                        onClick={() => setSearchOpen(false)}
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 border-1.5 border-slate-200 dark:border-slate-800 text-[13px] font-bold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-600 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                      >
+                        <span className="text-[15px]">{sp.icon}</span> {sp.label}
                       </Link>
                     ))}
                   </div>
@@ -486,68 +359,88 @@ export function Navbar() {
         {mobileOpen && (
           <>
             <motion.div
-              style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,.5)", zIndex: 98 }}
+              className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[150]"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
-              className="pn-nav"
-              style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "min(340px,90vw)", background: "#fff", zIndex: 99, padding: "80px 24px 32px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 0 }}
+              className="fixed top-0 right-0 bottom-0 w-[min(340px,90vw)] bg-white dark:bg-slate-950 z-[151] pt-20 px-6 pb-8 overflow-y-auto flex flex-col shadow-2xl"
               initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 340, damping: 34 }}
             >
               {/* User card (if logged in) */}
               {user && (
-                <div style={{ background: "linear-gradient(135deg,#EBF4FF,#E6F7EE)", borderRadius: 20, padding: "16px 18px", marginBottom: 20, display: "flex", alignItems: "center", gap: 14 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC,#00A651)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 18 }}>
+                <div className="bg-gradient-to-br from-indigo-50 dark:from-indigo-900/20 to-emerald-50 dark:to-emerald-900/20 rounded-2xl p-4 mb-5 flex items-center gap-3.5 border border-indigo-100 dark:border-indigo-800/30">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-emerald-500 flex items-center justify-center text-white font-black text-lg shadow-sm">
                     {getInitials()}
                   </div>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 800, color: "#0D1B2A" }}>{profile?.first_name || "User"} {profile?.last_name || ""}</div>
-                    <div style={{ fontSize: 12, color: "#64748B", fontWeight: 600, textTransform: "capitalize" }}>{profile?.role || user.email}</div>
+                    <div className="text-[15px] font-black text-slate-900 dark:text-white leading-tight">{profile?.first_name || "User"} {profile?.last_name || ""}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 font-bold capitalize mt-0.5">{profile?.role || user.email}</div>
                   </div>
                 </div>
               )}
 
               {/* Nav links */}
-              {NAV_LINKS.map((l, i) => (
-                <Link key={i} href={l.href} className="pn-mobile-link">
-                  {l.label} <ChevronRight style={{ width: 16, height: 16, color: "#94A3B8" }} />
-                </Link>
-              ))}
+              <div className="flex flex-col">
+                {NAV_LINKS.map((l, i) => (
+                  <Link 
+                    key={i} 
+                    href={l.href} 
+                    className="flex items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800/60 text-base font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {l.label} <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </Link>
+                ))}
+              </div>
 
               {/* Specialties */}
-              <div style={{ margin: "16px 0 8px", fontSize: 11, fontWeight: 800, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".08em" }}>Specialties</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+              <div className="mt-6 mb-3 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Specialties</div>
+              <div className="flex flex-wrap gap-2 mb-8">
                 {SPECIALTIES.map((sp, i) => (
-                  <Link key={i} href={sp.href} onClick={() => setMobileOpen(false)}
-                    style={{ display: "flex", alignItems: "center", gap: 5, background: "#F4F6FB", borderRadius: 100, padding: "7px 13px", fontSize: 13, fontWeight: 700, color: "#334155", textDecoration: "none" }}>
-                    <span style={{ fontSize: 15 }}>{sp.icon}</span> {sp.label}
+                  <Link 
+                    key={i} 
+                    href={sp.href} 
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 text-[13px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800"
+                  >
+                    <span className="text-[15px]">{sp.icon}</span> {sp.label}
                   </Link>
                 ))}
               </div>
 
               {/* Auth actions */}
-              <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="mt-auto flex flex-col gap-2.5">
                 {user ? (
                   <>
-                    <button onClick={() => { router.push("/dashboard"); setMobileOpen(false) }}
-                      style={{ background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "13px 20px", fontSize: 14, fontWeight: 700, color: "#334155", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-                      <LayoutDashboard style={{ width: 16, height: 16 }} /> Dashboard
+                    <button 
+                      onClick={() => { router.push("/dashboard"); setMobileOpen(false) }}
+                      className="flex items-center justify-center gap-2 bg-slate-50 dark:bg-slate-900 border-1.5 border-slate-200 dark:border-slate-800 rounded-full py-3 px-5 text-sm font-bold text-slate-800 dark:text-slate-200 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <LayoutDashboard className="w-4 h-4" /> Dashboard
                     </button>
-                    <button onClick={() => { logout(); setMobileOpen(false) }}
-                      style={{ background: "#FEF2F2", border: "1.5px solid #FCA5A5", borderRadius: 100, padding: "13px 20px", fontSize: 14, fontWeight: 700, color: "#DC2626", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-                      <LogOut style={{ width: 16, height: 16 }} /> Log out
+                    <button 
+                      onClick={() => { logout(); setMobileOpen(false) }}
+                      className="flex items-center justify-center gap-2 bg-red-50 dark:bg-red-900/20 border-1.5 border-red-200 dark:border-red-900/50 rounded-full py-3 px-5 text-sm font-bold text-red-600 dark:text-red-400 transition-colors hover:bg-red-100 dark:hover:bg-red-900/40"
+                    >
+                      <LogOut className="w-4 h-4" /> Log out
                     </button>
                   </>
                 ) : (
                   <>
-                    <Link href="/auth/login" onClick={() => setMobileOpen(false)}
-                      style={{ background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "13px 20px", fontSize: 14, fontWeight: 700, color: "#334155", textAlign: "center", textDecoration: "none", display: "block" }}>
+                    <Link 
+                      href="/auth/login" 
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center bg-slate-50 dark:bg-slate-900 border-1.5 border-slate-200 dark:border-slate-800 rounded-full py-3 px-5 text-sm font-bold text-slate-800 dark:text-slate-200 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
                       Log In
                     </Link>
-                    <Link href="/auth/signup" onClick={() => setMobileOpen(false)}
-                      style={{ background: "#0066CC", borderRadius: 100, padding: "13px 20px", fontSize: 14, fontWeight: 700, color: "#fff", textAlign: "center", textDecoration: "none", display: "block", boxShadow: "0 4px 14px rgba(0,102,204,.3)" }}>
+                    <Link 
+                      href="/auth/signup" 
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center bg-indigo-600 rounded-full py-3 px-5 text-sm font-bold text-white shadow-md shadow-indigo-600/20 transition-colors hover:bg-indigo-700"
+                    >
                       Register Free
                     </Link>
                   </>
@@ -559,4 +452,4 @@ export function Navbar() {
       </AnimatePresence>
     </>
   )
-}
+}

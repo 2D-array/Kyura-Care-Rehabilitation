@@ -2,14 +2,13 @@ import { Sidebar } from "@/components/sidebar"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#020617] transition-colors duration-300 relative overflow-hidden">
-      {/* Background ambient lighting */}
+    <div className="flex min-h-[calc(100vh-120px)] bg-slate-50 dark:bg-[#020617] transition-colors duration-300 relative overflow-hidden">
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 dark:bg-indigo-500/15 rounded-full blur-[120px] pointer-events-none -z-10" />
       
-      <div className="hidden md:flex w-64 flex-col fixed inset-y-0 z-40">
+      <div className="hidden md:flex w-64 flex-col shrink-0 sticky top-0 h-[calc(100vh-120px)]">
         <Sidebar />
       </div>
-      <main className="md:pl-64 flex-1">
+      <main className="flex-1 min-w-0 overflow-y-auto">
         {children}
       </main>
     </div>

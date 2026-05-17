@@ -12,7 +12,7 @@ const data = [
 
 export function RecoveryChart() {
   return (
-    <div className="h-[250px] w-full mt-4">
+    <div className="h-[250px] w-full mt-4" style={{ minWidth: 0, minHeight: 250 }}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
           <defs>

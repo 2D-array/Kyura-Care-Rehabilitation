@@ -65,12 +65,13 @@ export default function SignupPage() {
           body: JSON.stringify({ role, first_name: firstName, last_name: lastName, license_number: licenseNumber })
         })
       } catch (err) {}
-      
-      await supabase.auth.signOut()
+
+      router.push('/dashboard')
+      return
     }
-    
+
     setLoading(false)
-    toast.success("Account created successfully. Please log in.")
+    toast.success("Account created! Check your email to confirm.")
     router.push('/auth/login')
   }
 

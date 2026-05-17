@@ -27,7 +27,7 @@ def get_patient_profile(
 ):
     try:
         db = supabase_admin
-        res = db.table("patients").select("*").eq("id", profile["id"]).execute()
+        res = db.table("patients").select("*").eq("profile_id", profile["id"]).execute()
         patient_data = res.data[0] if res.data else {}
         return {**profile, **patient_data, "role": "patient"}
     except Exception as e:
@@ -53,9 +53,9 @@ def update_patient_profile(
 
         if patient_updates:
             db.table("patients").upsert({
-                "id": profile["id"],
+                "profile_id": profile["id"],
                 **patient_updates
-            }).execute()
+            }, on_conflict="profile_id").execute()
 
         return {"status": "success", "message": "Patient profile updated"}
     except Exception as e:
@@ -87,7 +87,7 @@ def get_patient_medical_records(
             "allergies, current_medications, past_surgeries, "
             "chronic_conditions, medical_history, primary_injury, "
             "blood_group, weight, height"
-        ).eq("id", profile["id"]).execute()
+        ).eq("profile_id", profile["id"]).execute()
 
         patient_data = res.data[0] if res.data else {}
         return {

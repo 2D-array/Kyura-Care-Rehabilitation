@@ -1,6 +1,5 @@
-# pyrefly: ignore [missing-import]
+import os
 from fastapi import FastAPI
-# pyrefly: ignore [missing-import]
 from fastapi.middleware.cors import CORSMiddleware
 from database import supabase
 from routers import doctors, patients, appointments, subscriptions, auth
@@ -11,9 +10,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
+allowed_origins = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[o.strip() for o in allowed_origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,5 +35,4 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    # Simple check to see if Supabase client is initialized
     return {"status": "ok", "supabase_configured": supabase is not None}

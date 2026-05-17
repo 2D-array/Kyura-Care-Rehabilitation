@@ -38,7 +38,11 @@ export async function GET(request: Request) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${data.session.access_token}`
           },
-          body: JSON.stringify({ role })
+          body: JSON.stringify({
+            role,
+            first_name: data.session.user.user_metadata?.first_name || "",
+            last_name: data.session.user.user_metadata?.last_name || ""
+          })
         })
       } catch (err) {
         console.error("Failed to sync profile", err)

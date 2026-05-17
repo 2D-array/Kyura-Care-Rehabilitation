@@ -2,19 +2,15 @@ import os
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from supabase import create_client, Client
+from database import supabase, supabase_admin
 
 security = HTTPBearer(auto_error=False)
 
 
 def get_supabase_client(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Client:
-    url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_KEY")
-    client = create_client(url, key)
-
+    client = supabase
     if credentials:
-        # Set the JWT so postgrest respects RLS
         client.postgrest.auth(credentials.credentials)
-
     return client
 
 
@@ -22,12 +18,8 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     if not credentials:
         raise HTTPException(status_code=401, detail="Authentication credentials missing")
 
-    url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_KEY")
-    client = create_client(url, key)
-
     try:
-        user_response = client.auth.get_user(credentials.credentials)
+        user_response = supabase.auth.get_user(credentials.credentials)
         if not user_response or not user_response.user:
             raise HTTPException(status_code=401, detail="Invalid or expired token")
         return user_response.user
@@ -37,16 +29,10 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         raise HTTPException(status_code=401, detail=str(e))
 
 
-def get_current_user_profile(
-    user=Depends(get_current_user),
-):
+def get_current_user_profile(user=Depends(get_current_user)):
     """Fetch profile using admin client to avoid RLS issues."""
-    from database import supabase_admin
     try:
-        client_to_use = supabase_admin or create_client(
-            os.environ.get("SUPABASE_URL"),
-            os.environ.get("SUPABASE_KEY")
-        )
+        client_to_use = supabase_admin or supabase
         response = client_to_use.table("profiles").select("*").eq("id", user.id).execute()
         if not response.data:
             raise HTTPException(

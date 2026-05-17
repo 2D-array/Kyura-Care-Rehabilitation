@@ -7,6 +7,15 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 
+const COLOR_MAP: Record<string, { iconBg: string; iconText: string; dot: string }> = {
+  indigo: { iconBg: "bg-indigo-100 dark:bg-indigo-900/30", iconText: "text-indigo-600 dark:text-indigo-400", dot: "bg-indigo-500" },
+  emerald: { iconBg: "bg-emerald-100 dark:bg-emerald-900/30", iconText: "text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500" },
+  rose: { iconBg: "bg-rose-100 dark:bg-rose-900/30", iconText: "text-rose-600 dark:text-rose-400", dot: "bg-rose-500" },
+  amber: { iconBg: "bg-amber-100 dark:bg-amber-900/30", iconText: "text-amber-600 dark:text-amber-400", dot: "bg-amber-500" },
+  purple: { iconBg: "bg-purple-100 dark:bg-purple-900/30", iconText: "text-purple-600 dark:text-purple-400", dot: "bg-purple-500" },
+  cyan: { iconBg: "bg-cyan-100 dark:bg-cyan-900/30", iconText: "text-cyan-600 dark:text-cyan-400", dot: "bg-cyan-500" },
+}
+
 const TREATMENTS = [
   {
     icon: Brain,
@@ -123,7 +132,7 @@ export default function TreatmentsPage() {
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
               >
                 <Card className="group p-8 rounded-[2rem] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/60 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] h-full flex flex-col">
-                  <div className={`w-16 h-16 rounded-2xl bg-${treatment.color}-100 dark:bg-${treatment.color}-900/30 flex items-center justify-center mb-6 text-${treatment.color}-600 dark:text-${treatment.color}-400 shadow-lg group-hover:scale-110 transition-transform`}>
+                  <div className={`w-16 h-16 rounded-2xl ${COLOR_MAP[treatment.color].iconBg} flex items-center justify-center mb-6 ${COLOR_MAP[treatment.color].iconText} shadow-lg group-hover:scale-110 transition-transform`}>
                     <treatment.icon className="w-8 h-8" />
                   </div>
                   
@@ -138,7 +147,7 @@ export default function TreatmentsPage() {
                   <div className="space-y-3 mb-6 flex-grow">
                     {treatment.features.map((feature, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm">
-                        <div className={`w-1.5 h-1.5 rounded-full bg-${treatment.color}-500`}></div>
+                        <div className={`w-1.5 h-1.5 rounded-full ${COLOR_MAP[treatment.color].dot}`}></div>
                         <span className="text-slate-700 dark:text-slate-300 font-medium">{feature}</span>
                       </div>
                     ))}

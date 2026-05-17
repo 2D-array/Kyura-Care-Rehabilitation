@@ -177,16 +177,16 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className={labelClass}>First Name</label>
-                      <Input value={formData.first_name} onChange={e => set("first_name", e.target.value)} placeholder="John" className={inputClass} />
+                      <Input value={formData.first_name || ""} onChange={e => set("first_name", e.target.value)} placeholder="John" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>Last Name</label>
-                      <Input value={formData.last_name} onChange={e => set("last_name", e.target.value)} placeholder="Doe" className={inputClass} />
+                      <Input value={formData.last_name || ""} onChange={e => set("last_name", e.target.value)} placeholder="Doe" className={inputClass} />
                     </div>
                   </div>
                   <div>
                     <label className={labelClass}>Phone Number</label>
-                    <Input value={formData.phone_number} onChange={e => set("phone_number", e.target.value)} placeholder="+1 (555) 000-0000" className={inputClass} />
+                    <Input value={formData.phone_number || ""} onChange={e => set("phone_number", e.target.value)} placeholder="+1 (555) 000-0000" className={inputClass} />
                   </div>
                 </div>
               </Card>
@@ -199,11 +199,11 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className={labelClass}>Date of Birth</label>
-                        <Input type="date" value={formData.date_of_birth} onChange={e => set("date_of_birth", e.target.value)} className={inputClass} />
+                        <Input type="date" value={formData.date_of_birth || ""} onChange={e => set("date_of_birth", e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>Gender</label>
-                        <Select value={formData.gender} onValueChange={v => set("gender", v)}>
+                        <Select value={formData.gender || ""} onValueChange={v => set("gender", v)}>
                           <SelectTrigger className={inputClass}><SelectValue placeholder="Select gender" /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="male">Male</SelectItem>
@@ -217,7 +217,7 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className={labelClass}>Blood Group</label>
-                        <Select value={formData.blood_group} onValueChange={v => set("blood_group", v)}>
+                        <Select value={formData.blood_group || ""} onValueChange={v => set("blood_group", v)}>
                           <SelectTrigger className={inputClass}><SelectValue placeholder="Select blood group" /></SelectTrigger>
                           <SelectContent>
                             {["A+","A-","B+","B-","AB+","AB-","O+","O-"].map(bg => (
@@ -228,24 +228,24 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <label className={labelClass}>Insurance Provider</label>
-                        <Input value={formData.insurance_provider} onChange={e => set("insurance_provider", e.target.value)} placeholder="e.g. Blue Cross" className={inputClass} />
+                        <Input value={formData.insurance_provider || ""} onChange={e => set("insurance_provider", e.target.value)} placeholder="e.g. Blue Cross" className={inputClass} />
                       </div>
                     </div>
                     <div>
                       <label className={labelClass}>Address</label>
-                      <Input value={formData.address} onChange={e => set("address", e.target.value)} placeholder="123 Main St, City, State" className={inputClass} />
+                      <Input value={formData.address || ""} onChange={e => set("address", e.target.value)} placeholder="123 Main St, City, State" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>Emergency Contact</label>
-                      <Input value={formData.emergency_contact} onChange={e => set("emergency_contact", e.target.value)} placeholder="Name & Phone Number" className={inputClass} />
+                      <Input value={formData.emergency_contact || ""} onChange={e => set("emergency_contact", e.target.value)} placeholder="Name & Phone Number" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>Primary Injury / Condition</label>
-                      <Input value={formData.primary_injury} onChange={e => set("primary_injury", e.target.value)} placeholder="e.g. Lower Back Pain, Knee Post-Op" className={inputClass} />
+                      <Input value={formData.primary_injury || ""} onChange={e => set("primary_injury", e.target.value)} placeholder="e.g. Lower Back Pain, Knee Post-Op" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>Medical History Notes</label>
-                      <Textarea value={formData.medical_history} onChange={e => set("medical_history", e.target.value)} placeholder="Allergies, current medications, past surgeries..." className={`${textareaClass} min-h-[120px]`} />
+                      <Textarea value={formData.medical_history || ""} onChange={e => set("medical_history", e.target.value)} placeholder="Allergies, current medications, past surgeries..." className={`${textareaClass} min-h-[120px]`} />
                     </div>
                   </div>
                 </Card>
@@ -255,47 +255,47 @@ export default function ProfilePage() {
                   <div className="space-y-5">
                     <div>
                       <label className={labelClass}>Specialty</label>
-                      <Input value={formData.specialty} onChange={e => set("specialty", e.target.value)} placeholder="e.g. Neurological Rehabilitation" className={inputClass} />
+                      <Input value={formData.specialty || ""} onChange={e => set("specialty", e.target.value)} placeholder="e.g. Neurological Rehabilitation" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>Professional Bio</label>
-                      <Textarea value={formData.bio} onChange={e => set("bio", e.target.value)} placeholder="Tell patients about your expertise and approach..." className={`${textareaClass} min-h-[120px]`} />
+                      <Textarea value={formData.bio || ""} onChange={e => set("bio", e.target.value)} placeholder="Tell patients about your expertise and approach..." className={`${textareaClass} min-h-[120px]`} />
                     </div>
                     <div>
                       <label className={labelClass}>Education & Credentials</label>
-                      <Textarea value={formData.education_details} onChange={e => set("education_details", e.target.value)} placeholder="Medical school, residency, certifications..." className={`${textareaClass} min-h-[90px]`} />
+                      <Textarea value={formData.education_details || ""} onChange={e => set("education_details", e.target.value)} placeholder="Medical school, residency, certifications..." className={`${textareaClass} min-h-[90px]`} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className={labelClass}>Years of Experience</label>
-                        <Input type="number" value={formData.years_of_experience} onChange={e => set("years_of_experience", parseInt(e.target.value))} placeholder="10" className={inputClass} />
+                        <Input type="number" value={formData.years_of_experience || ""} onChange={e => set("years_of_experience", parseInt(e.target.value))} placeholder="10" className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>Consultation Fee ($)</label>
-                        <Input type="number" value={formData.consultation_fee} onChange={e => set("consultation_fee", parseFloat(e.target.value))} placeholder="150" className={inputClass} />
+                        <Input type="number" value={formData.consultation_fee || ""} onChange={e => set("consultation_fee", parseFloat(e.target.value))} placeholder="150" className={inputClass} />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className={labelClass}>Available Days</label>
-                        <Input value={formData.available_days} onChange={e => set("available_days", e.target.value)} placeholder="Mon, Wed, Fri" className={inputClass} />
+                        <Input value={formData.available_days || ""} onChange={e => set("available_days", e.target.value)} placeholder="Mon, Wed, Fri" className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>Available Hours</label>
-                        <Input value={formData.available_hours} onChange={e => set("available_hours", e.target.value)} placeholder="9:00 AM – 5:00 PM" className={inputClass} />
+                        <Input value={formData.available_hours || ""} onChange={e => set("available_hours", e.target.value)} placeholder="9:00 AM – 5:00 PM" className={inputClass} />
                       </div>
                     </div>
                     <div>
                       <label className={labelClass}>Clinic Name</label>
-                      <Input value={formData.clinic_name} onChange={e => set("clinic_name", e.target.value)} placeholder="e.g. CityRehab Center" className={inputClass} />
+                      <Input value={formData.clinic_name || ""} onChange={e => set("clinic_name", e.target.value)} placeholder="e.g. CityRehab Center" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>Clinic Address</label>
-                      <Input value={formData.clinic_address} onChange={e => set("clinic_address", e.target.value)} placeholder="123 Medical Blvd, Suite 200" className={inputClass} />
+                      <Input value={formData.clinic_address || ""} onChange={e => set("clinic_address", e.target.value)} placeholder="123 Medical Blvd, Suite 200" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>Languages Spoken</label>
-                      <Input value={formData.languages_spoken} onChange={e => set("languages_spoken", e.target.value)} placeholder="English, Spanish, Hindi" className={inputClass} />
+                      <Input value={formData.languages_spoken || ""} onChange={e => set("languages_spoken", e.target.value)} placeholder="English, Spanish, Hindi" className={inputClass} />
                     </div>
                   </div>
                 </Card>

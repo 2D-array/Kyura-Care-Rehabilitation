@@ -23,11 +23,11 @@ def get_current_profile(
         role = profile.get("role")
 
         if role == "doctor":
-            doc_res = supabase_admin.table("doctors").select("*").eq("id", user.id).execute()
+            doc_res = supabase_admin.table("doctors").select("*").eq("profile_id", user.id).execute()
             doctor_data = doc_res.data[0] if doc_res.data else {}
             return {**profile, **doctor_data, "role": "doctor"}
         else:
-            pat_res = supabase_admin.table("patients").select("*").eq("id", user.id).execute()
+            pat_res = supabase_admin.table("patients").select("*").eq("profile_id", user.id).execute()
             patient_data = pat_res.data[0] if pat_res.data else {}
             return {**profile, **patient_data, "role": "patient"}
     except HTTPException:
@@ -65,14 +65,13 @@ def sync_profile(
         # Upsert role-specific row
         if role == "doctor":
             supabase_admin.table("doctors").upsert({
-                "id": user.id,
+                "profile_id": user.id,
                 "specialty": "General",
-                "license_number": data.license_number or "PENDING"
-            }).execute()
+            }, on_conflict="profile_id").execute()
         else:
             supabase_admin.table("patients").upsert({
-                "id": user.id
-            }).execute()
+                "profile_id": user.id
+            }, on_conflict="profile_id").execute()
 
         return {"status": "success", "message": "Profile synced successfully"}
     except Exception as e:
