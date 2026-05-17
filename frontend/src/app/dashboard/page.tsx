@@ -6,10 +6,35 @@ import { RecoveryChart } from "@/components/dashboard-charts"
 import { Activity, Calendar as CalendarIcon, Video, CheckCircle, Clock, AlertCircle, ArrowRight, Search } from "lucide-react"
 import { useUser } from "@/context/UserContext"
 import Link from "next/link"
+import { createBrowserClient } from "@supabase/ssr"
 
 export default function DashboardPage() {
   const { profile, loading } = useUser()
   const [appointments, setAppointments] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/appointments/`, {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setAppointments(data)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    fetchAppointments()
+  }, [])
 
   const isProfileComplete = profile?.role === "patient"
     ? !!(profile?.first_name && profile?.phone_number && profile?.date_of_birth)
@@ -88,21 +113,55 @@ export default function DashboardPage() {
         </Card>
 
         {/* Next Appointment */}
-        <Card className="md:col-span-2 p-6 rounded-[2rem] bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/60 dark:border-white/5 shadow-lg group">
+        <Card className="md:col-span-2 p-6 rounded-[2rem] bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/60 dark:border-white/5 shadow-lg group flex flex-col justify-between">
           <h3 className="text-base font-bold mb-4 tracking-tight text-slate-900 dark:text-white">Next Appointment</h3>
-          <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-50/50 dark:bg-slate-950/30 p-4 rounded-2xl border border-slate-100 dark:border-white/5 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-950/50">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-50 dark:from-indigo-900/50 dark:to-slate-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-black text-lg shrink-0">SC</div>
-            <div className="flex-1 text-center sm:text-left space-y-1">
-              <h4 className="font-bold text-slate-900 dark:text-white text-sm">Dr. Sarah Chen</h4>
-              <p className="text-xs font-medium text-slate-500">Neuro Rehabilitation • Online</p>
-              <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-1 bg-indigo-50 dark:bg-indigo-900/20 w-fit px-2 py-0.5 rounded-md mx-auto sm:mx-0">
-                <CalendarIcon className="w-3 h-3" /> Today, 2:00 PM
+          
+          {(() => {
+            const nextAppt = appointments
+              .filter(a => a.status === "scheduled" || a.status === "confirmed")
+              .sort((a, b) => new Date(a.appointment_time).getTime() - new Date(b.appointment_time).getTime())[0]
+
+            if (!nextAppt) {
+              return (
+                <div className="flex-1 flex flex-col items-center justify-center py-6 bg-slate-50/50 dark:bg-slate-950/30 rounded-2xl border border-slate-100 dark:border-white/5">
+                  <p className="text-sm font-medium text-slate-500">No upcoming appointments.</p>
+                  <Link href="/doctors">
+                    <Button variant="link" className="text-indigo-600 font-bold px-0 mt-1">Book one now <ArrowRight className="w-4 h-4 ml-1" /></Button>
+                  </Link>
+                </div>
+              )
+            }
+
+            // Determine if patient or doctor view
+            const isPatient = profile?.role === "patient"
+            const otherParty = isPatient ? nextAppt.doctors : nextAppt.patients
+            const name = otherParty?.profiles?.first_name 
+              ? `${isPatient ? 'Dr. ' : ''}${otherParty.profiles.first_name} ${otherParty.profiles.last_name || ''}`.trim()
+              : 'Unknown'
+            const initials = otherParty?.profiles?.first_name ? `${otherParty.profiles.first_name[0]}${otherParty.profiles.last_name?.[0] || ''}` : 'U'
+            
+            const dateStr = new Date(nextAppt.appointment_time).toLocaleString('en-US', {
+              weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+            })
+
+            return (
+              <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-50/50 dark:bg-slate-950/30 p-4 rounded-2xl border border-slate-100 dark:border-white/5 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-950/50 h-full">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-50 dark:from-indigo-900/50 dark:to-slate-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-black text-lg shrink-0 uppercase">{initials}</div>
+                <div className="flex-1 text-center sm:text-left space-y-1">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm">{name}</h4>
+                  <p className="text-xs font-medium text-slate-500 capitalize">{nextAppt.session_type} Session</p>
+                  <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-1 bg-indigo-50 dark:bg-indigo-900/20 w-fit px-2 py-0.5 rounded-md mx-auto sm:mx-0">
+                    <CalendarIcon className="w-3 h-3" /> {dateStr}
+                  </div>
+                </div>
+                {nextAppt.session_type === "online" && (
+                  <Button className="w-full sm:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg font-bold px-5 h-10 text-sm">
+                    <Video className="w-3 h-3 mr-1.5" /> Join
+                  </Button>
+                )}
               </div>
-            </div>
-            <Button className="w-full sm:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg font-bold px-5 h-10 text-sm">
-              <Video className="w-3 h-3 mr-1.5" /> Join
-            </Button>
-          </div>
+            )
+          })()}
         </Card>
 
         {/* Quick Actions */}
