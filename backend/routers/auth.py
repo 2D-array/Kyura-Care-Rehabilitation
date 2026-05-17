@@ -25,11 +25,16 @@ def get_current_profile(
         if role == "doctor":
             doc_res = supabase_admin.table("doctors").select("*").eq("profile_id", user.id).execute()
             doctor_data = doc_res.data[0] if doc_res.data else {}
-            return {**profile, **doctor_data, "role": "doctor"}
+            return {**doctor_data, **profile, "role": "doctor"}
         else:
             pat_res = supabase_admin.table("patients").select("*").eq("profile_id", user.id).execute()
             patient_data = pat_res.data[0] if pat_res.data else {}
-            return {**profile, **patient_data, "role": "patient"}
+            # Map DB column names to frontend names
+            if "primary_injury_condition" in patient_data:
+                patient_data["primary_injury"] = patient_data.pop("primary_injury_condition")
+            if "medical_history_notes" in patient_data:
+                patient_data["medical_history"] = patient_data.pop("medical_history_notes")
+            return {**patient_data, **profile, "role": "patient"}
     except HTTPException:
         raise
     except Exception as e:

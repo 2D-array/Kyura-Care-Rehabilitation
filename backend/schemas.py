@@ -1,6 +1,27 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from enum import Enum
+
+class SessionType(str, Enum):
+    online = "online"
+    in_clinic = "in-clinic"
+    at_home = "at-home"
+
+class AppointmentStatus(str, Enum):
+    scheduled = "scheduled"
+    completed = "completed"
+    cancelled = "cancelled"
+    no_show = "no-show"
+
+class SubscriptionTier(str, Enum):
+    weekly = "weekly"
+    monthly = "monthly"
+    yearly = "yearly"
+
+class RoleType(str, Enum):
+    patient = "patient"
+    doctor = "doctor"
 
 class DoctorOnboard(BaseModel):
     specialty: str
@@ -11,13 +32,13 @@ class DoctorOnboard(BaseModel):
 class AppointmentCreate(BaseModel):
     doctor_id: str
     appointment_date: datetime
-    session_type: str  # online, in-clinic, at-home
+    session_type: SessionType
 
 class AppointmentStatusUpdate(BaseModel):
-    status: str
+    status: AppointmentStatus
 
 class SubscriptionCreate(BaseModel):
-    tier: str  # weekly, monthly, yearly
+    tier: SubscriptionTier
 
 class PatientProfileUpdate(BaseModel):
     first_name: Optional[str] = None
@@ -77,7 +98,12 @@ class AppointmentResponse(BaseModel):
     session_type: str
 
 class SyncProfileRequest(BaseModel):
-    role: str
+    role: RoleType
     first_name: str
     last_name: str
     license_number: Optional[str] = None
+
+class ReviewCreate(BaseModel):
+    doctor_id: str
+    rating: int
+    comment: Optional[str] = None

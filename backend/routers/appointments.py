@@ -7,15 +7,11 @@ from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/v1/appointments", tags=["Appointments"])
 
-VALID_STATUSES = {"scheduled", "completed", "cancelled", "no-show"}
-
 @router.post("/")
 def book_appointment(
     data: AppointmentCreate,
     profile = Depends(require_role("patient")),
 ):
-    if data.session_type not in ['online', 'in-clinic', 'at-home']:
-        raise HTTPException(status_code=400, detail="Invalid session type")
 
     if data.appointment_date < datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Cannot book appointments in the past")
@@ -69,8 +65,6 @@ def update_appointment_status(
     data: AppointmentStatusUpdate,
     profile = Depends(get_current_user_profile),
 ):
-    if data.status not in VALID_STATUSES:
-        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {', '.join(VALID_STATUSES)}")
 
     if not supabase_admin:
         raise HTTPException(status_code=500, detail="Admin client not configured")

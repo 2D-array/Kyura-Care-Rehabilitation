@@ -200,8 +200,8 @@ export default function LandingPage() {
                     key={activeOffer}
                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: .35 }}
-                    className="offer-card"
-                    style={{ background: `linear-gradient(135deg, ${OFFERS[activeOffer].color.replace("from-", "").replace("to-", "")})`, position: "absolute", inset: 0 }}
+                    className={`offer-card bg-gradient-to-br ${OFFERS[activeOffer].color}`}
+                    style={{ position: "absolute", inset: 0 }}
                   >
                     <div style={{ position: "absolute", top: -30, right: -30, width: 140, height: 140, background: "rgba(255,255,255,.12)", borderRadius: "50%" }} />
                     <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, background: "rgba(255,255,255,.08)", borderRadius: "50%" }} />

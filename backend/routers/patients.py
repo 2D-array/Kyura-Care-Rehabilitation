@@ -29,7 +29,12 @@ def get_patient_profile(
         db = supabase_admin
         res = db.table("patients").select("*").eq("profile_id", profile["id"]).execute()
         patient_data = res.data[0] if res.data else {}
-        return {**profile, **patient_data, "role": "patient"}
+        # Map DB column names to frontend names
+        if "primary_injury_condition" in patient_data:
+            patient_data["primary_injury"] = patient_data.pop("primary_injury_condition")
+        if "medical_history_notes" in patient_data:
+            patient_data["medical_history"] = patient_data.pop("medical_history_notes")
+        return {**patient_data, **profile, "role": "patient"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -52,6 +57,12 @@ def update_patient_profile(
             db.table("profiles").update(profile_updates).eq("id", profile["id"]).execute()
 
         if patient_updates:
+            # Map frontend names to DB column names
+            if "primary_injury" in patient_updates:
+                patient_updates["primary_injury_condition"] = patient_updates.pop("primary_injury")
+            if "medical_history" in patient_updates:
+                patient_updates["medical_history_notes"] = patient_updates.pop("medical_history")
+            
             db.table("patients").upsert({
                 "profile_id": profile["id"],
                 **patient_updates
@@ -85,7 +96,7 @@ def get_patient_medical_records(
         db = supabase_admin
         res = db.table("patients").select(
             "allergies, current_medications, past_surgeries, "
-            "chronic_conditions, medical_history, primary_injury, "
+            "chronic_conditions, medical_history_notes, primary_injury_condition, "
             "blood_group, weight, height"
         ).eq("profile_id", profile["id"]).execute()
 
@@ -95,8 +106,8 @@ def get_patient_medical_records(
             "current_medications": patient_data.get("current_medications", ""),
             "past_surgeries": patient_data.get("past_surgeries", ""),
             "chronic_conditions": patient_data.get("chronic_conditions", ""),
-            "medical_history": patient_data.get("medical_history", ""),
-            "primary_injury": patient_data.get("primary_injury", ""),
+            "medical_history": patient_data.get("medical_history_notes", ""),
+            "primary_injury": patient_data.get("primary_injury_condition", ""),
             "blood_group": patient_data.get("blood_group", ""),
             "weight": patient_data.get("weight", ""),
             "height": patient_data.get("height", ""),

@@ -189,7 +189,7 @@ export function Navbar() {
 
                   <DropdownMenuContent
                     align="end"
-                    className="w-60 rounded-2xl border-1.5 border-slate-200 dark:border-slate-800 shadow-xl shadow-black/5 dark:shadow-black/40 p-2 bg-white dark:bg-slate-950 animate-in slide-in-from-top-2"
+                    className="w-60 rounded-2xl border-1.5 border-slate-200 dark:border-slate-800 shadow-xl shadow-black/5 dark:shadow-black/40 p-2 bg-white dark:bg-slate-950 animate-in slide-in-from-top-2 z-[200]"
                     forceMount
                   >
                     <div className="p-3 border-b border-slate-100 dark:border-slate-800/60 mb-1.5">

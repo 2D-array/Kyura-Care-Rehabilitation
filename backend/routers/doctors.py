@@ -49,6 +49,35 @@ def is_doctor_profile_complete(
     return has_name and has_specialty and has_bio
 
 
+@router.put("/me")
+def update_doctor_profile(
+    data: DoctorProfileUpdate,
+    profile=Depends(require_role("doctor"))
+):
+    try:
+        db = supabase_admin
+        update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+        if not update_data:
+            return {"status": "success", "message": "No changes provided"}
+
+        profile_updates = {k: v for k, v in update_data.items() if k in PROFILE_FIELDS}
+        doctor_updates = {k: v for k, v in update_data.items() if k in DOCTOR_FIELDS}
+
+        if profile_updates:
+            db.table("profiles").update(profile_updates).eq("id", profile["id"]).execute()
+
+        if doctor_updates:
+            db.table("doctors").upsert({
+                "profile_id": profile["id"],
+                **doctor_updates
+            }, on_conflict="profile_id").execute()
+
+        return {"status": "success", "message": "Doctor profile updated"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+
 @router.get("/")
 def get_doctors():
     try:
