@@ -103,7 +103,7 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <main className="flex flex-col min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', 'Nunito', sans-serif", background: "#F4F6FB" }}>
+    <main className="landing-page flex flex-col min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', 'Nunito', sans-serif", background: "#F4F6FB" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800&display=swap');
         * { box-sizing: border-box; }
@@ -132,6 +132,52 @@ export default function LandingPage() {
         .green-dot { width:8px;height:8px;background:#00A651;border-radius:50%;display:inline-block;margin-right:6px; }
         .floating { animation: floatUpDown 4s ease-in-out infinite; }
         @keyframes floatUpDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        .dark .landing-page,
+        .dark .landing-page section[style*="#F4F6FB"],
+        .dark .landing-page section[style*="#fff"],
+        .dark .landing-page [style*="linear-gradient(135deg, #EBF4FF"],
+        .dark .landing-page [style*="linear-gradient(135deg,#EBF4FF"],
+        .dark .landing-page [style*="background: #F4F6FB"],
+        .dark .landing-page [style*="background: #fff"],
+        .dark .landing-page [style*="background: #EBF4FF"],
+        .dark .landing-page [style*="background: #E6F7EE"],
+        .dark .landing-page [style*="background: #FFF4EE"],
+        .dark .landing-page [style*="background: #FFF9E6"],
+        .dark .landing-page [style*="background: #F3EAF9"],
+        .dark .landing-page [style*="background: #FFF0E8"] {
+          background: #020617 !important;
+        }
+        .dark .landing-page .service-card,
+        .dark .landing-page .doc-card,
+        .dark .landing-page .testi-card,
+        .dark .landing-page [style*="border: 1.5px solid #E8EDF5"] {
+          background: rgba(15, 23, 42, .82) !important;
+          border-color: rgba(255,255,255,.08) !important;
+        }
+        .dark .landing-page [style*="border: 2px solid #E8EDF5"],
+        .dark .landing-page [style*="borderTop: 1.5px solid #E8EDF5"] {
+          border-color: rgba(255,255,255,.1) !important;
+        }
+        .dark .landing-page [style*="color: #0D1B2A"],
+        .dark .landing-page [style*="color:#0D1B2A"],
+        .dark .landing-page [style*="color: #1a1a2e"],
+        .dark .landing-page [style*="color: #333"],
+        .dark .landing-page [style*="color: #444"] {
+          color: #f8fafc !important;
+        }
+        .dark .landing-page [style*="color: #4A5568"],
+        .dark .landing-page [style*="color: #64748B"],
+        .dark .landing-page [style*="color: #475569"],
+        .dark .landing-page [style*="color: #334155"],
+        .dark .landing-page [style*="color: #888"] {
+          color: #94a3b8 !important;
+        }
+        .dark .landing-page .hero-badge,
+        .dark .landing-page .section-tag,
+        .dark .landing-page .stat-pill {
+          background: rgba(79,70,229,.18) !important;
+          border-color: rgba(129,140,248,.25) !important;
+        }
       `}</style>
 
 
@@ -152,7 +198,7 @@ export default function LandingPage() {
                 <span className="gradient-text">Complete Recovery</span>
               </h1>
               <p style={{ fontSize: 18, color: "#4A5568", lineHeight: 1.7, marginBottom: 28, maxWidth: 500 }}>
-                Expert physiotherapy at home, in-clinic, or online. India's most trusted rehabilitation platform — used by <strong>2 million+ patients.</strong>
+                Expert physiotherapy at home, in-clinic, or online. India&apos;s most trusted rehabilitation platform — used by <strong>2 million+ patients.</strong>
               </p>
 
               {/* Quick Search */}
@@ -421,7 +467,7 @@ export default function LandingPage() {
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} style={{ flex: "1 1 400px" }}>
               <div className="section-tag">Why PhysioNow?</div>
               <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 900, color: "#0D1B2A", margin: "8px 0 16px", fontFamily: "'Syne', sans-serif" }}>
-                India's Most Trusted<br />Recovery Platform
+                India&apos;s Most Trusted<br />Recovery Platform
               </h2>
               <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 28 }}>
                 We combine cutting-edge technology with compassionate care to ensure every patient gets the best possible outcome — faster than any traditional approach.
@@ -470,7 +516,7 @@ export default function LandingPage() {
           <div style={{ textAlign: "center", marginBottom: 44 }}>
             <div className="section-tag">Real Stories</div>
             <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 900, color: "#0D1B2A", margin: "0 0 10px", fontFamily: "'Syne', sans-serif" }}>
-              2 Million Patients Can't Be Wrong
+              2 Million Patients Can&apos;t Be Wrong
             </h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
@@ -479,7 +525,7 @@ export default function LandingPage() {
                 <div style={{ display: "flex", gap: 3, marginBottom: 12 }}>
                   {[...Array(t.rating)].map((_, si) => <Star key={si} style={{ width: 16, height: 16, fill: "#FFB800", color: "#FFB800" }} />)}
                 </div>
-                <p style={{ fontSize: 15, color: "#334155", lineHeight: 1.7, fontStyle: "italic", marginBottom: 16 }}>"{t.text}"</p>
+                <p style={{ fontSize: 15, color: "#334155", lineHeight: 1.7, fontStyle: "italic", marginBottom: 16 }}>&quot;{t.text}&quot;</p>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC,#00A651)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16 }}>{t.name[0]}</div>
@@ -585,7 +631,7 @@ export default function LandingPage() {
                 </div>
                 <span style={{ fontSize: 16, fontWeight: 900, color: "#fff", fontFamily: "'Syne', sans-serif" }}>PhysioNow</span>
               </div>
-              <p style={{ fontSize: 13, lineHeight: 1.7 }}>India's #1 physiotherapy & rehabilitation platform. Connecting patients with expert specialists nationwide.</p>
+              <p style={{ fontSize: 13, lineHeight: 1.7 }}>India&apos;s #1 physiotherapy & rehabilitation platform. Connecting patients with expert specialists nationwide.</p>
             </div>
             {[
               { title: "Services", links: ["Online Consultation", "At-Home Physio", "In-Clinic Sessions", "Recovery Kits", "PhysioPass"] },

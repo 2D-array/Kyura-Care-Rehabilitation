@@ -76,11 +76,20 @@ export function Navbar() {
   }, [searchOpen])
 
   /* close mobile menu on route change */
-  useEffect(() => { setMobileOpen(false) }, [pathname])
+  useEffect(() => {
+    const id = window.setTimeout(() => setMobileOpen(false), 0)
+    return () => window.clearTimeout(id)
+  }, [pathname])
+
+  const firstName = profile?.first_name || user?.user_metadata?.first_name || "User"
+  const lastName = profile?.last_name || user?.user_metadata?.last_name || ""
+  const userRole = profile?.role || user?.user_metadata?.role || "Patient"
 
   const getInitials = () => {
-    if (profile?.first_name && profile?.last_name)
-      return `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
+    if (firstName !== "User" && lastName !== "")
+      return `${firstName[0]}${lastName[0]}`.toUpperCase()
+    if (firstName !== "User")
+      return firstName[0].toUpperCase()
     if (user?.email) return user.email[0].toUpperCase()
     return "U"
   }
@@ -177,10 +186,10 @@ export function Navbar() {
                       </div>
                       <div className="hidden md:flex flex-col items-start text-left">
                         <div className="text-[13px] font-black text-slate-900 dark:text-white leading-[1.2]">
-                          {profile?.first_name || "User"}
+                          {firstName}
                         </div>
                         <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-[1.2] capitalize">
-                          {profile?.role || "Patient"}
+                          {userRole}
                         </div>
                       </div>
                       <ChevronDown className="hidden md:block w-3.5 h-3.5 text-slate-400" />
@@ -199,7 +208,7 @@ export function Navbar() {
                         </div>
                         <div className="flex-1 overflow-hidden">
                           <div className="text-sm font-black text-slate-900 dark:text-white truncate">
-                            {profile?.first_name || "User"} {profile?.last_name || ""}
+                            {firstName} {lastName}
                           </div>
                           <div className="text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5 truncate">
                             <span className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
@@ -215,8 +224,8 @@ export function Navbar() {
                     <DropdownMenuItem onClick={() => router.push("/dashboard/profile")} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                       <User className="w-4 h-4" /> My Profile
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/doctors")} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                      <Stethoscope className="w-4 h-4" /> Find Doctors
+                    <DropdownMenuItem onClick={() => router.push(profile?.role === "doctor" ? "/dashboard/patients" : "/doctors")} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                      <Stethoscope className="w-4 h-4" /> {profile?.role === "doctor" ? "My Patients" : "Find Doctors"}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => router.push("/dashboard/profile?tab=settings")} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                       <Settings className="w-4 h-4" /> Settings
@@ -452,4 +461,4 @@ export function Navbar() {
       </AnimatePresence>
     </>
   )
-}
+}

@@ -25,6 +25,7 @@ export default function SignupPage() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
   const router = useRouter()
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,7 +57,7 @@ export default function SignupPage() {
 
     if (data.session) {
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/sync-profile`, {
+        const syncRes = await fetch(`${apiUrl}/api/v1/auth/sync-profile`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -64,9 +65,16 @@ export default function SignupPage() {
           },
           body: JSON.stringify({ role, first_name: firstName, last_name: lastName, license_number: licenseNumber })
         })
-      } catch (err) {}
+        if (!syncRes.ok) {
+          throw new Error("Profile sync failed")
+        }
+      } catch {}
 
-      router.push('/dashboard')
+      if (role === "patient") {
+        router.replace('/')
+      } else {
+        router.replace('/dashboard')
+      }
       return
     }
 

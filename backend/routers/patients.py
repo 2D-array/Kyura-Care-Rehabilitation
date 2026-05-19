@@ -21,6 +21,16 @@ PATIENT_FIELDS = {
 }
 
 
+def get_doctor_lookup_ids(profile_id: str):
+    doctor_ids = [profile_id]
+    doctor_res = supabase_admin.table("doctors").select("id").eq("profile_id", profile_id).execute()
+    if doctor_res.data:
+        doctor_id = doctor_res.data[0].get("id")
+        if doctor_id and doctor_id not in doctor_ids:
+            doctor_ids.append(doctor_id)
+    return doctor_ids
+
+
 @router.get("/me")
 def get_patient_profile(
     profile=Depends(require_role("patient"))
@@ -119,3 +129,50 @@ def get_patient_medical_records(
 @router.get("/me/documents")
 def get_patient_documents(profile=Depends(require_role("patient")), client: Client = Depends(get_supabase_client)):
     return {"documents": [], "message": "Document management coming soon"}
+
+
+@router.get("/doctor/my-patients")
+def get_doctor_patients(profile=Depends(require_role("doctor"))):
+    """Return patients who have booked appointments with the current doctor."""
+    if not supabase_admin:
+        raise HTTPException(status_code=500, detail="Admin client not configured")
+
+    try:
+        doctor_ids = get_doctor_lookup_ids(profile["id"])
+        query = supabase_admin.table("appointments").select(
+            """
+            *,
+            patients(
+                *,
+                profiles(first_name, last_name, email, phone_number)
+            )
+            """
+        ).order("appointment_time", desc=True)
+        appointments_res = query.in_("doctor_id", doctor_ids).execute() if len(doctor_ids) > 1 else query.eq("doctor_id", profile["id"]).execute()
+
+        patients_by_id = {}
+        for appointment in appointments_res.data or []:
+            patient = appointment.get("patients") or {}
+            patient_profile = patient.get("profiles") or {}
+            patient_id = appointment.get("patient_id")
+
+            if not patient_id:
+                continue
+
+            if "primary_injury_condition" in patient:
+                patient["primary_injury"] = patient.pop("primary_injury_condition")
+            if "medical_history_notes" in patient:
+                patient["medical_history"] = patient.pop("medical_history_notes")
+
+            existing = patients_by_id.setdefault(patient_id, {
+                "id": patient_id,
+                "profile": patient_profile,
+                "patient": patient,
+                "appointments": []
+            })
+            appointment["patients"] = None
+            existing["appointments"].append(appointment)
+
+        return list(patients_by_id.values())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

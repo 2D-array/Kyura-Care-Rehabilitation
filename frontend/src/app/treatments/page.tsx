@@ -24,7 +24,8 @@ const TREATMENTS = [
     features: ["Stroke Recovery", "Spinal Cord Injury", "Parkinson's Management", "Multiple Sclerosis"],
     duration: "8-12 weeks",
     sessions: "3-5 per week",
-    color: "indigo"
+    color: "indigo",
+    href: "/doctors?spec=neuro"
   },
   {
     icon: Bone,
@@ -33,7 +34,8 @@ const TREATMENTS = [
     features: ["Joint Replacement", "Fracture Recovery", "Arthritis Management", "Sports Injuries"],
     duration: "6-10 weeks",
     sessions: "2-4 per week",
-    color: "emerald"
+    color: "emerald",
+    href: "/doctors?spec=ortho"
   },
   {
     icon: Heart,
@@ -42,7 +44,8 @@ const TREATMENTS = [
     features: ["Post-Heart Attack", "Cardiac Surgery", "Heart Failure", "Exercise Training"],
     duration: "12-16 weeks",
     sessions: "3 per week",
-    color: "rose"
+    color: "rose",
+    href: "/doctors?spec=cardiac"
   },
   {
     icon: Zap,
@@ -51,7 +54,8 @@ const TREATMENTS = [
     features: ["ACL Reconstruction", "Rotator Cuff", "Ankle Sprains", "Performance Training"],
     duration: "4-8 weeks",
     sessions: "4-6 per week",
-    color: "amber"
+    color: "amber",
+    href: "/doctors?spec=sports"
   },
   {
     icon: Users,
@@ -60,7 +64,8 @@ const TREATMENTS = [
     features: ["Developmental Delays", "Cerebral Palsy", "Torticollis", "Gait Training"],
     duration: "Ongoing",
     sessions: "2-3 per week",
-    color: "purple"
+    color: "purple",
+    href: "/doctors?q=Pediatric%20Physio"
   },
   {
     icon: Activity,
@@ -69,7 +74,8 @@ const TREATMENTS = [
     features: ["Lower Back Pain", "Fibromyalgia", "Chronic Headaches", "Arthritis Pain"],
     duration: "12+ weeks",
     sessions: "2-3 per week",
-    color: "cyan"
+    color: "cyan",
+    href: "/doctors?spec=pain"
   }
 ]
 
@@ -164,9 +170,11 @@ export default function TreatmentsPage() {
                     </div>
                   </div>
                   
-                  <Button className="w-full mt-6 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white">
-                    Learn More
-                  </Button>
+                  <Link href={treatment.href}>
+                    <Button className="w-full mt-6 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white">
+                      Find Specialists
+                    </Button>
+                  </Link>
                 </Card>
               </motion.div>
             ))}

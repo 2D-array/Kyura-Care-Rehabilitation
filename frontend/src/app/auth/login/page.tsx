@@ -21,6 +21,7 @@ export default function LoginPage() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
   const router = useRouter()
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,39 +35,52 @@ export default function LoginPage() {
       return
     }
 
-    // Sync profile after login (ensures profile row exists)
+    // Resolve role before navigating so post-login landing is deterministic.
     if (data.session) {
+      let userRole = data.user?.user_metadata?.role || "patient"
       try {
-        const profileRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`, {
+        const profileRes = await fetch(`${apiUrl}/api/v1/auth/me`, {
           headers: { Authorization: `Bearer ${data.session.access_token}` }
         })
-        // If profile doesn't exist, it means they need to be synced
-        if (!profileRes.ok) {
-          // Try to get user metadata for role
-          const userMeta = data.user?.user_metadata
-          if (userMeta?.role) {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/sync-profile`, {
+        
+        if (profileRes.ok) {
+          const profileData = await profileRes.json()
+          userRole = profileData.role || userRole
+        } else {
+          // If profile doesn't exist, it means they need to be synced
+          if (userRole) {
+            const syncRes = await fetch(`${apiUrl}/api/v1/auth/sync-profile`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${data.session.access_token}`
               },
               body: JSON.stringify({
-                role: userMeta.role,
-                first_name: userMeta.first_name || "",
-                last_name: userMeta.last_name || "",
-                license_number: userMeta.license_number || null
+                role: userRole,
+                first_name: data.user?.user_metadata?.first_name || "",
+                last_name: data.user?.user_metadata?.last_name || "",
+                license_number: data.user?.user_metadata?.license_number || null
               })
             })
+            if (syncRes.ok) {
+              const syncedProfile = await syncRes.json()
+              userRole = syncedProfile.role || userRole
+            }
           }
         }
       } catch (err) {
         // Silent fail — user still gets into dashboard
         console.error('Profile sync on login failed:', err)
       }
-    }
 
-    router.push('/dashboard')
+      if (userRole === "patient") {
+        router.replace('/')
+      } else {
+        router.replace('/dashboard')
+      }
+      return
+    }
+    setLoading(false)
   }
 
   return (
@@ -103,7 +117,7 @@ export default function LoginPage() {
             </Button>
           </form>
           <div className="mt-8 text-center text-sm font-medium text-slate-500">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/auth/signup" className="text-indigo-600 dark:text-indigo-400 hover:underline font-bold">Create one</Link>
           </div>
         </Card>

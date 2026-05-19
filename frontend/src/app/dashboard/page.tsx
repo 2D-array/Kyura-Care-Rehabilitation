@@ -8,9 +8,28 @@ import { useUser } from "@/context/UserContext"
 import Link from "next/link"
 import { createBrowserClient } from "@supabase/ssr"
 
+type DashboardAppointment = {
+  id: string
+  appointment_time: string
+  session_type?: string
+  status?: string
+  doctors?: {
+    profiles?: {
+      first_name?: string
+      last_name?: string
+    }
+  }
+  patients?: {
+    profiles?: {
+      first_name?: string
+      last_name?: string
+    }
+  }
+}
+
 export default function DashboardPage() {
   const { profile, loading } = useUser()
-  const [appointments, setAppointments] = useState<any[]>([])
+  const [appointments, setAppointments] = useState<DashboardAppointment[]>([])
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -53,11 +72,19 @@ export default function DashboardPage() {
             {profile?.role === "doctor" ? "Here's your practice overview." : "Here's your recovery progress."}
           </p>
         </div>
-        <Link href="/doctors">
-          <Button className="rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold gap-2 shadow-lg">
-            <Search className="w-4 h-4" />Find Doctors
-          </Button>
-        </Link>
+        {profile?.role === "patient" ? (
+          <Link href="/doctors">
+            <Button className="rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold gap-2 shadow-lg">
+              <Search className="w-4 h-4" />Find Doctors
+            </Button>
+          </Link>
+        ) : (
+          <Link href="/dashboard/patients">
+            <Button className="rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold gap-2 shadow-lg">
+              <Activity className="w-4 h-4" />My Patients
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Profile Incomplete Banner */}
@@ -125,9 +152,11 @@ export default function DashboardPage() {
               return (
                 <div className="flex-1 flex flex-col items-center justify-center py-6 bg-slate-50/50 dark:bg-slate-950/30 rounded-2xl border border-slate-100 dark:border-white/5">
                   <p className="text-sm font-medium text-slate-500">No upcoming appointments.</p>
-                  <Link href="/doctors">
-                    <Button variant="link" className="text-indigo-600 font-bold px-0 mt-1">Book one now <ArrowRight className="w-4 h-4 ml-1" /></Button>
-                  </Link>
+                  {profile?.role === "patient" && (
+                    <Link href="/doctors">
+                      <Button variant="link" className="text-indigo-600 font-bold px-0 mt-1">Book one now <ArrowRight className="w-4 h-4 ml-1" /></Button>
+                    </Link>
+                  )}
                 </div>
               )
             }
@@ -168,9 +197,9 @@ export default function DashboardPage() {
         <Card className="md:col-span-2 p-6 rounded-[2rem] bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/60 dark:border-white/5 shadow-lg">
           <h3 className="text-base font-bold mb-4 tracking-tight text-slate-900 dark:text-white">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-3">
-            <Link href="/doctors">
+            <Link href={profile?.role === "doctor" ? "/dashboard/patients" : "/doctors"}>
               <Button variant="outline" className="w-full h-16 rounded-2xl flex flex-col gap-1 border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all text-xs font-bold">
-                <Search className="w-4 h-4 text-indigo-600" />Find Doctor
+                <Search className="w-4 h-4 text-indigo-600" />{profile?.role === "doctor" ? "My Patients" : "Find Doctor"}
               </Button>
             </Link>
             <Link href="/dashboard/profile">
