@@ -103,10 +103,40 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <main className="landing-page flex flex-col min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', 'Nunito', sans-serif", background: "#F4F6FB" }}>
+    <main className="landing-page flex flex-col min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', 'Nunito', sans-serif", background: "var(--landing-page-bg)" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800&display=swap');
         * { box-sizing: border-box; }
+        .landing-page {
+          --landing-page-bg: #F4F6FB;
+          --landing-hero-bg: linear-gradient(135deg, #EBF4FF 0%, #F0FFF8 50%, #FFF4EE 100%);
+          --landing-hero-overlay: radial-gradient(circle at 20% 50%, rgba(0,102,204,.08) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0,166,81,.08) 0%, transparent 60%);
+          --landing-surface: #fff;
+          --landing-muted-surface: #F4F6FB;
+          --landing-hover-surface: #EBF4FF;
+          --landing-border: #E8EDF5;
+          --landing-heading: #0D1B2A;
+          --landing-body: #4A5568;
+          --landing-muted: #888;
+          --landing-chip-text: #444;
+          --landing-button-text: #333;
+          --landing-online-avatar-border: #fff;
+        }
+        .dark .landing-page {
+          --landing-page-bg: #020617;
+          --landing-hero-bg: linear-gradient(135deg, #020617 0%, #03111f 52%, #04130f 100%);
+          --landing-hero-overlay: radial-gradient(circle at 20% 50%, rgba(0,102,204,.16) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0,166,81,.14) 0%, transparent 60%);
+          --landing-surface: rgba(15, 23, 42, .82);
+          --landing-muted-surface: rgba(15, 23, 42, .72);
+          --landing-hover-surface: rgba(30, 41, 59, .9);
+          --landing-border: rgba(255,255,255,.1);
+          --landing-heading: #f8fafc;
+          --landing-body: #94a3b8;
+          --landing-muted: #94a3b8;
+          --landing-chip-text: #e2e8f0;
+          --landing-button-text: #e2e8f0;
+          --landing-online-avatar-border: #020617;
+        }
         .navlink { font-size:14px; font-weight:600; color:#1a1a2e; transition:color .2s; cursor:pointer; }
         .navlink:hover { color:#0066CC; }
         .pill-btn { display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;font-size:13px;font-weight:700;transition:all .2s; cursor:pointer; }
@@ -182,8 +212,8 @@ export default function LandingPage() {
 
 
       {/* HERO */}
-      <motion.section ref={heroRef} style={{ opacity: heroOpacity, y: heroY, position: "relative", background: "linear-gradient(135deg, #EBF4FF 0%, #F0FFF8 50%, #FFF4EE 100%)", padding: "0", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(0,102,204,.08) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0,166,81,.08) 0%, transparent 60%)", pointerEvents: "none" }} />
+      <motion.section ref={heroRef} style={{ opacity: heroOpacity, y: heroY, position: "relative", background: "var(--landing-hero-bg)", padding: "0", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "var(--landing-hero-overlay)", pointerEvents: "none" }} />
 
         <div style={{ maxWidth: 1320, margin: "0 auto", padding: "48px 24px 0" }}>
           <div style={{ display: "flex", gap: 48, alignItems: "center" }}>
@@ -193,20 +223,20 @@ export default function LandingPage() {
                 <span className="green-dot" />
                 <span>500+ Specialists Available Now</span>
               </div>
-              <h1 style={{ fontSize: "clamp(36px, 5vw, 58px)", fontWeight: 900, color: "#0D1B2A", lineHeight: 1.1, marginBottom: 18, fontFamily: "'Syne', sans-serif" }}>
+              <h1 style={{ fontSize: "clamp(36px, 5vw, 58px)", fontWeight: 900, color: "var(--landing-heading)", lineHeight: 1.1, marginBottom: 18, fontFamily: "'Syne', sans-serif" }}>
                 Your Fastest Path to<br />
                 <span className="gradient-text">Complete Recovery</span>
               </h1>
-              <p style={{ fontSize: 18, color: "#4A5568", lineHeight: 1.7, marginBottom: 28, maxWidth: 500 }}>
+              <p style={{ fontSize: 18, color: "var(--landing-body)", lineHeight: 1.7, marginBottom: 28, maxWidth: 500 }}>
                 Expert physiotherapy at home, in-clinic, or online. India&apos;s most trusted rehabilitation platform — used by <strong>2 million+ patients.</strong>
               </p>
 
               {/* Quick Search */}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
                 {["Knee Pain", "Back Pain", "Sports Injury", "Stroke Rehab", "Post Surgery"].map((tag, i) => (
-                  <div key={i} style={{ background: "#fff", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "6px 14px", fontSize: 13, fontWeight: 600, color: "#444", cursor: "pointer", transition: "all .2s" }}
+                  <div key={i} style={{ background: "var(--landing-surface)", border: "1.5px solid var(--landing-border)", borderRadius: 100, padding: "6px 14px", fontSize: 13, fontWeight: 600, color: "var(--landing-chip-text)", cursor: "pointer", transition: "all .2s" }}
                     onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = "#0066CC"; (e.target as HTMLElement).style.color = "#0066CC" }}
-                    onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = "#E8EDF5"; (e.target as HTMLElement).style.color = "#444" }}>
+                    onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = "var(--landing-border)"; (e.target as HTMLElement).style.color = "var(--landing-chip-text)" }}>
                     {tag}
                   </div>
                 ))}
@@ -221,7 +251,7 @@ export default function LandingPage() {
                   </button>
                 </Link>
                 <Link href="/doctors">
-                  <button style={{ background: "#fff", color: "#0D1B2A", border: "2px solid #E8EDF5", borderRadius: 100, padding: "14px 28px", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all .2s" }}>
+                  <button style={{ background: "var(--landing-surface)", color: "var(--landing-heading)", border: "2px solid var(--landing-border)", borderRadius: 100, padding: "14px 28px", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all .2s" }}>
                     <PlayCircle style={{ width: 18, height: 18, color: "#FF6B35" }} /> How It Works
                   </button>
                 </Link>
@@ -230,8 +260,8 @@ export default function LandingPage() {
               <div style={{ display: "flex", gap: 28 }}>
                 {[{ val: "2M+", lbl: "Patients" }, { val: "500+", lbl: "Specialists" }, { val: "4.9★", lbl: "App Rating" }].map((s, i) => (
                   <div key={i}>
-                    <div style={{ fontSize: 22, fontWeight: 900, color: "#0D1B2A" }}>{s.val}</div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: "#888" }}>{s.lbl}</div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: "var(--landing-heading)" }}>{s.val}</div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--landing-muted)" }}>{s.lbl}</div>
                   </div>
                 ))}
               </div>
@@ -270,17 +300,17 @@ export default function LandingPage() {
               </div>
 
               {/* Live Consult Widget */}
-              <div style={{ background: "#fff", borderRadius: 20, padding: "18px 20px", border: "1.5px solid #E8EDF5", display: "flex", gap: 16, alignItems: "center" }}>
+              <div style={{ background: "var(--landing-surface)", borderRadius: 20, padding: "18px 20px", border: "1.5px solid var(--landing-border)", display: "flex", gap: 16, alignItems: "center" }}>
                 <div style={{ position: "relative", flexShrink: 0 }}>
                   <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC22,#00A65122)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👩‍⚕️</div>
-                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, background: "#00A651", borderRadius: "50%", border: "2px solid #fff" }} />
+                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, background: "#00A651", borderRadius: "50%", border: "2px solid var(--landing-online-avatar-border)" }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#1a1a2e" }}>Dr. Priya Sharma is online</div>
-                  <div style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>Sports Physio • 12 yrs exp • ⭐ 4.9</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "var(--landing-heading)" }}>Dr. Priya Sharma is online</div>
+                  <div style={{ fontSize: 12, color: "var(--landing-muted)", marginBottom: 8 }}>Sports Physio • 12 yrs exp • ⭐ 4.9</div>
                   <div style={{ display: "flex", gap: 8 }}>
                     <button style={{ flex: 1, background: "#0066CC", color: "#fff", border: "none", borderRadius: 100, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Video Call</button>
-                    <button style={{ flex: 1, background: "#F4F6FB", color: "#333", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Chat Now</button>
+                    <button style={{ flex: 1, background: "var(--landing-muted-surface)", color: "var(--landing-button-text)", border: "1.5px solid var(--landing-border)", borderRadius: 100, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Chat Now</button>
                   </div>
                 </div>
               </div>
@@ -288,10 +318,10 @@ export default function LandingPage() {
               {/* Quick Stats Row */}
               <div style={{ display: "flex", gap: 12 }}>
                 {[{ icon: "⏱", label: "Avg Response", val: "< 3 min" }, { icon: "🏥", label: "Cities", val: "200+" }, { icon: "💚", label: "Satisfaction", val: "98%" }].map((s, i) => (
-                  <div key={i} style={{ flex: 1, background: "#fff", borderRadius: 16, padding: "14px 12px", border: "1.5px solid #E8EDF5", textAlign: "center" }}>
+                  <div key={i} style={{ flex: 1, background: "var(--landing-surface)", borderRadius: 16, padding: "14px 12px", border: "1.5px solid var(--landing-border)", textAlign: "center" }}>
                     <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
-                    <div style={{ fontSize: 16, fontWeight: 900, color: "#0D1B2A" }}>{s.val}</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#888" }}>{s.label}</div>
+                    <div style={{ fontSize: 16, fontWeight: 900, color: "var(--landing-heading)" }}>{s.val}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "var(--landing-muted)" }}>{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -300,13 +330,13 @@ export default function LandingPage() {
         </div>
 
         {/* Specialty Chips Row */}
-        <div style={{ background: "#fff", borderTop: "1.5px solid #E8EDF5", marginTop: 0 }}>
+        <div style={{ background: "var(--landing-surface)", borderTop: "1.5px solid var(--landing-border)", marginTop: 0 }}>
           <div style={{ maxWidth: 1320, margin: "0 auto", padding: "16px 24px", display: "flex", gap: 10, overflowX: "auto", alignItems: "center" }} className="scroll-x">
-            <span style={{ fontSize: 12, fontWeight: 800, color: "#888", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: ".06em", marginRight: 8 }}>Find by:</span>
+            <span style={{ fontSize: 12, fontWeight: 800, color: "var(--landing-muted)", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: ".06em", marginRight: 8 }}>Find by:</span>
             {SPECIALTIES.map((sp, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap", fontSize: 13, fontWeight: 700, color: "#333", transition: "all .2s", flexShrink: 0 }}
-                onMouseEnter={e => { (e.currentTarget.style.background = "#EBF4FF"); (e.currentTarget.style.borderColor = "#0066CC"); (e.currentTarget.style.color = "#0066CC") }}
-                onMouseLeave={e => { (e.currentTarget.style.background = "#F4F6FB"); (e.currentTarget.style.borderColor = "#E8EDF5"); (e.currentTarget.style.color = "#333") }}>
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--landing-muted-surface)", border: "1.5px solid var(--landing-border)", borderRadius: 100, padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap", fontSize: 13, fontWeight: 700, color: "var(--landing-button-text)", transition: "all .2s", flexShrink: 0 }}
+                onMouseEnter={e => { e.currentTarget.style.background = "var(--landing-hover-surface)"; e.currentTarget.style.borderColor = "#0066CC"; e.currentTarget.style.color = "#0066CC" }}
+                onMouseLeave={e => { e.currentTarget.style.background = "var(--landing-muted-surface)"; e.currentTarget.style.borderColor = "var(--landing-border)"; e.currentTarget.style.color = "var(--landing-button-text)" }}>
                 <span style={{ fontSize: 18 }}>{sp.icon}</span> {sp.label}
               </div>
             ))}
