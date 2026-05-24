@@ -76,7 +76,12 @@ const UserContext = createContext<UserContextType>({
 
 function profileFromUserMetadata(user: User): ProfileData {
   const metadata = user.user_metadata || {}
-  const role = metadata.role === 'doctor' ? 'doctor' : 'patient'
+  let role: 'patient' | 'doctor' | 'admin' = 'patient'
+  if (metadata.role === 'doctor') {
+    role = 'doctor'
+  } else if (metadata.role === 'admin') {
+    role = 'admin'
+  }
 
   return {
     id: user.id,

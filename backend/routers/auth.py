@@ -30,6 +30,8 @@ def get_current_profile(
             doc_res = supabase_admin.table("doctors").select("*").eq("profile_id", user.id).execute()
             doctor_data = doc_res.data[0] if doc_res.data else {}
             return {**doctor_data, **profile, "role": "doctor"}
+        elif role == "admin":
+            return {**profile, "role": "admin"}
         else:
             pat_res = supabase_admin.table("patients").select("*").eq("profile_id", user.id).execute()
             patient_data = pat_res.data[0] if pat_res.data else {}
