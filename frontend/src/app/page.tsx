@@ -683,7 +683,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div style={{ borderTop: "1px solid rgba(255,255,255,.1)", paddingTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-            <div style={{ fontSize: 13 }}>© 2025 PhysioNow. All rights reserved. | <span style={{ cursor: "pointer" }}>Privacy Policy</span> | <span style={{ cursor: "pointer" }}>Terms of Service</span></div>
+            <div style={{ fontSize: 13 }}>© 2025 PhysioNow. All rights reserved. | <span style={{ cursor: "pointer" }}>Privacy Policy</span> | <span style={{ cursor: "pointer" }}>Terms of Service</span> | <Link href="/admin/login" style={{ color: "rgba(255,255,255,.5)", cursor: "pointer", transition: "color .2s" }} onMouseEnter={e => e.currentTarget.style.color = "#fff"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.5)"}>Admin Panel</Link></div>
             <div style={{ display: "flex", gap: 14 }}>
               {["🐦", "📘", "📸", "💼"].map((s, i) => (
                 <div key={i} style={{ width: 32, height: 32, background: "rgba(255,255,255,.1)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 14, transition: "background .2s" }}

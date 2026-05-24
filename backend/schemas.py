@@ -168,3 +168,18 @@ class ResetPasswordRequest(BaseModel):
     otp: str
     new_password: str
 
+
+class MembershipAdminUpdate(BaseModel):
+    tier: str
+    action: str  # "grant" | "revoke" | "upgrade"
+
+
+class RescheduleAdminRequest(BaseModel):
+    new_date: str
+
+
+class AnnouncementRequest(BaseModel):
+    target: str  # "all" | "patients" | "doctors"
+    title: str
+    content: str
+
