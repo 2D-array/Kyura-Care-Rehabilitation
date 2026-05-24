@@ -5,8 +5,34 @@ from database import supabase_admin
 from schemas import AppointmentCreate, AppointmentStatusUpdate
 from datetime import datetime, timezone
 from services.email import send_appointment_confirmation
+import os
+import logging
+from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
+
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
 
 router = APIRouter(prefix="/api/v1/appointments", tags=["Appointments"])
+
+
+class BookingVerify(BaseModel):
+    appointment_id: str
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+
+
+def _get_razorpay_client():
+    if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET or RAZORPAY_KEY_ID.startswith("rzp_placeholder"):
+        return None
+    try:
+        import razorpay
+        return razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+    except Exception as e:
+        logger.warning(f"Failed to initialize Razorpay client in appointments: {e}")
+        return None
 
 
 def get_doctor_lookup_ids(profile_id: str):
@@ -31,25 +57,19 @@ def book_appointment(
         raise HTTPException(status_code=500, detail="Admin client not configured")
 
     try:
-        # ── Subscription enforcement ──
-        sub_res = supabase_admin.table("subscriptions").select("id").eq(
-            "profile_id", profile["id"]
-        ).eq("status", "active").execute()
-
-        if not sub_res.data:
-            raise HTTPException(
-                status_code=403,
-                detail="Active PhysioPass subscription required. Visit /plans to subscribe."
-            )
-
-        # ── Doctor exists check ──
+        # ── Doctor exists and fee check ──
         doc_res = supabase_admin.table("doctors").select(
-            "id, profiles(first_name, last_name)"
+            "id, consultation_fee, profiles(first_name, last_name)"
         ).eq("id", data.doctor_id).execute()
         if not doc_res.data:
             raise HTTPException(status_code=404, detail="Doctor not found")
 
         doctor = doc_res.data[0]
+        consultation_fee = doctor.get("consultation_fee") or 1500
+        doctor_profile = doctor.get("profiles") or {}
+        if isinstance(doctor_profile, list):
+            doctor_profile = doctor_profile[0] if doctor_profile else {}
+        doctor_name = f"{doctor_profile.get('first_name', '')} {doctor_profile.get('last_name', '')}".strip() or "Unknown"
 
         # ── Slot conflict check ──
         existing = supabase_admin.table("appointments").select("id").eq(
@@ -61,20 +81,59 @@ def book_appointment(
         if existing.data:
             raise HTTPException(status_code=409, detail="Slot already taken. Please choose a different time.")
 
-        # ── Insert appointment ──
+        # ── Razorpay Setup ──
+        client = _get_razorpay_client()
+
+        if client:
+            amount_paise = int(consultation_fee * 100)
+            order_data = {
+                "amount": amount_paise,
+                "currency": "INR",
+                "receipt": f"apt_{profile['id'][:8]}_{int(datetime.now().timestamp())}",
+                "notes": {
+                    "patient_id": profile["id"],
+                    "doctor_id": data.doctor_id,
+                    "appointment_time": data.appointment_date.isoformat()
+                }
+            }
+            order = client.order.create(data=order_data)
+
+            # Insert pending appointment
+            res = supabase_admin.table("appointments").insert({
+                "patient_id": profile["id"],
+                "doctor_id": data.doctor_id,
+                "appointment_time": data.appointment_date.isoformat(),
+                "session_type": data.session_type,
+                "status": "pending_payment",
+                "razorpay_order_id": order["id"]
+            }).execute()
+
+            return {
+                "razorpay_order_id": order["id"],
+                "amount": order["amount"],
+                "currency": order["currency"],
+                "key_id": RAZORPAY_KEY_ID,
+                "appointment_id": res.data[0]["id"],
+                "consultation_fee": consultation_fee,
+                "doctor_name": doctor_name,
+                "profile": {
+                    "name": f"{profile.get('first_name', '')} {profile.get('last_name', '')}".strip() or "Patient",
+                    "email": profile.get("email", ""),
+                    "contact": profile.get("phone_number", "")
+                }
+            }
+
+        # ── Mock Mode (No Razorpay config) ──
         res = supabase_admin.table("appointments").insert({
             "patient_id": profile["id"],
             "doctor_id": data.doctor_id,
             "appointment_time": data.appointment_date.isoformat(),
             "session_type": data.session_type,
-            "status": "scheduled"
+            "status": "scheduled",
+            "razorpay_order_id": f"mock_apt_order_{int(datetime.now().timestamp())}",
+            "razorpay_payment_id": f"mock_apt_pay_{int(datetime.now().timestamp())}",
+            "razorpay_signature": "mock_apt_signature"
         }).execute()
-
-        # ── Send confirmation email (stub) ──
-        doctor_profile = doctor.get("profiles") or {}
-        if isinstance(doctor_profile, list):
-            doctor_profile = doctor_profile[0] if doctor_profile else {}
-        doctor_name = f"{doctor_profile.get('first_name', '')} {doctor_profile.get('last_name', '')}".strip() or "Unknown"
 
         send_appointment_confirmation(
             patient_email=profile.get("email", ""),
@@ -84,11 +143,79 @@ def book_appointment(
             session_type=data.session_type,
         )
 
-        return res.data[0]
+        return {
+            "message": "Appointment confirmed (Mock Mode)",
+            "appointment": res.data[0],
+            "mock": True
+        }
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/verify-booking")
+def verify_booking_payment(
+    data: BookingVerify,
+    profile=Depends(require_role("patient")),
+):
+    if not supabase_admin:
+        raise HTTPException(status_code=500, detail="Admin client not configured")
+
+    client = _get_razorpay_client()
+
+    if client:
+        try:
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': data.razorpay_order_id,
+                'razorpay_payment_id': data.razorpay_payment_id,
+                'razorpay_signature': data.razorpay_signature
+            })
+        except Exception as e:
+            logger.error(f"Razorpay verification failed for appointment: {e}")
+            raise HTTPException(status_code=400, detail="Invalid payment signature")
+
+    try:
+        # Update pending appointment to scheduled
+        res = supabase_admin.table("appointments").update({
+            "status": "scheduled",
+            "razorpay_payment_id": data.razorpay_payment_id,
+            "razorpay_signature": data.razorpay_signature
+        }).eq("id", data.appointment_id).execute()
+
+        if not res.data:
+            raise HTTPException(status_code=404, detail="Appointment not found")
+
+        appointment = res.data[0]
+
+        # Fetch doctor details for email
+        doc_res = supabase_admin.table("doctors").select(
+            "profiles(first_name, last_name)"
+        ).eq("id", appointment["doctor_id"]).execute()
+        doctor_name = "Unknown Specialist"
+        if doc_res.data:
+            doctor_profile = doc_res.data[0].get("profiles") or {}
+            if isinstance(doctor_profile, list):
+                doctor_profile = doctor_profile[0] if doctor_profile else {}
+            doctor_name = f"{doctor_profile.get('first_name', '')} {doctor_profile.get('last_name', '')}".strip() or "Specialist"
+
+        send_appointment_confirmation(
+            patient_email=profile.get("email", ""),
+            patient_name=profile.get("first_name", "Patient"),
+            doctor_name=doctor_name,
+            appointment_date=appointment["appointment_time"],
+            session_type=appointment["session_type"],
+        )
+
+        return {
+            "status": "success",
+            "message": "Payment verified and appointment booked successfully",
+            "appointment": appointment
+        }
+    except Exception as e:
+        logger.error(f"Error completing appointment booking payment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/stats")

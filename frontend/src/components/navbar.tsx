@@ -45,6 +45,7 @@ const SEARCH_SUGGESTIONS = [
 const NAV_LINKS = [
   { label: "Find Specialist", href: "/doctors" },
   { label: "Treatments", href: "/treatments" },
+  { label: "PhysioPass", href: "/plans" },
   { label: "How It Works", href: "/#how-it-works" },
   { label: "Offers", href: "/offers" },
 ]

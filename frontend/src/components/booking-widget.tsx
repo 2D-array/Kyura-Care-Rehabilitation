@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import Script from "next/script"
 import { motion, AnimatePresence } from "framer-motion"
 import { DayPicker } from "react-day-picker"
 import { createBrowserClient } from "@supabase/ssr"
@@ -208,32 +209,100 @@ export function BookingWidget({
         }
       )
 
-      if (res.ok) {
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.detail || "Checkout booking session failed.")
+      }
+
+      const data = await res.json()
+
+      // ── Handle Mock Checkout Fallback ──
+      if (data.mock) {
         setBookingSuccess(true)
-        toast.success("Appointment booked successfully!", {
+        toast.success("Appointment booked successfully (Mock Mode)!", {
           description: `Your ${selectedType} session with Dr. ${doctorName} is confirmed.`,
         })
         setTimeout(() => {
           router.push("/dashboard/sessions")
         }, 2000)
-      } else {
-        const data = await res.json()
-        const detail = data.detail || "Booking failed"
-
-        if (res.status === 403 && detail.includes("subscription")) {
-          toast.error("Subscription Required", {
-            description:
-              "A PhysioPass subscription is required to book sessions.",
-          })
-          router.push("/plans")
-          return
-        }
-
-        toast.error("Booking Failed", { description: detail })
+        return
       }
-    } catch (err) {
-      toast.error("An error occurred. Please try again.")
-    } finally {
+
+      // ── Handle real Razorpay Payment ──
+      if (!window || !(window as any).Razorpay) {
+        toast.error("Razorpay SDK failed to load. Please try again.")
+        setBookingLoading(false)
+        return
+      }
+
+      const options = {
+        key: data.key_id,
+        amount: data.amount,
+        currency: data.currency,
+        name: "CuraReb Appointment Booking",
+        description: `Consultation Fee with Dr. ${doctorName}`,
+        order_id: data.razorpay_order_id,
+        handler: async function (response: any) {
+          try {
+            setBookingLoading(true)
+            const verifyRes = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/v1/appointments/verify-booking`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${session?.access_token}`,
+                },
+                body: JSON.stringify({
+                  appointment_id: data.appointment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              }
+            )
+
+            if (verifyRes.ok) {
+              setBookingSuccess(true)
+              toast.success("Appointment booked successfully!", {
+                description: `Your ${selectedType} session with Dr. ${doctorName} is confirmed.`,
+              })
+              setTimeout(() => {
+                router.push("/dashboard/sessions")
+              }, 2000)
+            } else {
+              const verifyErr = await verifyRes.json().catch(() => ({}))
+              toast.error(verifyErr.detail || "Payment verification failed.")
+            }
+          } catch (verifyErr) {
+            console.error("Booking verification error:", verifyErr)
+            toast.error("Network issue verifying payment. Rest assured we've logged it.")
+          } finally {
+            setBookingLoading(false)
+          }
+        },
+        prefill: {
+          name: data.profile.name,
+          email: data.profile.email,
+          contact: data.profile.contact,
+        },
+        theme: {
+          color: "#4f46e5",
+        },
+        modal: {
+          ondismiss: function () {
+            toast.info("Payment checkout cancelled.")
+            setBookingLoading(false)
+          },
+        },
+      }
+
+      const rzp = new (window as any).Razorpay(options)
+      rzp.open()
+
+    } catch (err: any) {
+      console.error("Booking checkout error:", err)
+      toast.error(err.message || "An unexpected error occurred during appointment booking.")
       setBookingLoading(false)
     }
   }
@@ -560,11 +629,12 @@ export function BookingWidget({
             </div>
 
             <p className="text-[11px] font-bold text-center text-slate-400 mt-4 uppercase tracking-wider">
-              PhysioPass subscription required
+              Secure pay-per-consultation checkout
             </p>
           </motion.div>
         )}
       </AnimatePresence>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
     </Card>
   )
 }
