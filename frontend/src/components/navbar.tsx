@@ -357,7 +357,7 @@ export function Navbar() {
                   <Link href="/auth/login" className="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-full text-[13px] font-bold bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-1.5 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     Log In
                   </Link>
-                  <Link href="/auth/signup" className="inline-flex items-center justify-center px-4 py-2 rounded-full text-[13px] font-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30 transition-all">
+                  <Link href="/auth/signup" className="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-full text-[13px] font-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30 transition-all">
                     Register Free
                   </Link>
                 </div>
@@ -490,6 +490,14 @@ export function Navbar() {
               initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 340, damping: 34 }}
             >
+              {/* Close Button inside drawer */}
+              <button 
+                onClick={() => setMobileOpen(false)}
+                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
               {/* User card (if logged in) */}
               {user && (
                 <div className="bg-gradient-to-br from-indigo-50 dark:from-indigo-900/20 to-emerald-50 dark:to-emerald-900/20 rounded-2xl p-4 mb-5 flex items-center gap-3.5 border border-indigo-100 dark:border-indigo-800/30">

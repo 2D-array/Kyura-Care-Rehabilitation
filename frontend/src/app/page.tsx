@@ -131,7 +131,7 @@ export default function LandingPage() {
           --landing-hover-surface: rgba(30, 41, 59, .9);
           --landing-border: rgba(255,255,255,.1);
           --landing-heading: #f8fafc;
-          --landing-body: #94a3b8;
+          --landing-body: #cbd5e1;
           --landing-muted: #94a3b8;
           --landing-chip-text: #e2e8f0;
           --landing-button-text: #e2e8f0;
@@ -142,7 +142,10 @@ export default function LandingPage() {
         .pill-btn { display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;font-size:13px;font-weight:700;transition:all .2s; cursor:pointer; }
         .search-suggestion { display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;transition:background .15s; }
         .search-suggestion:hover { background:#F0F4FF; }
-        .offer-card { border-radius:20px;padding:24px 28px;color:#fff;position:relative;overflow:hidden;cursor:pointer; }
+        .offer-card { border-radius:20px;padding:20px;color:#fff;position:relative;overflow:hidden;cursor:pointer; }
+        @media (min-width: 640px) {
+          .offer-card { padding:24px 28px; }
+        }
         .doc-card { background:#fff;border-radius:20px;padding:20px;border:1.5px solid #E8EDF5;transition:all .25s;cursor:pointer; }
         .doc-card:hover { border-color:#0066CC;box-shadow:0 8px 32px rgba(0,102,204,.12);transform:translateY(-4px); }
         .stat-pill { display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700; }
@@ -215,10 +218,10 @@ export default function LandingPage() {
       <motion.section ref={heroRef} style={{ opacity: heroOpacity, y: heroY, position: "relative", background: "var(--landing-hero-bg)", padding: "0", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "var(--landing-hero-overlay)", pointerEvents: "none" }} />
 
-        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "48px 24px 0" }}>
-          <div style={{ display: "flex", gap: 48, alignItems: "center" }}>
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 pt-12 pb-0">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
             {/* Left */}
-            <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .6 }} style={{ flex: "1 1 520px", paddingBottom: 48 }}>
+            <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .6 }} className="w-full lg:w-1/2 lg:flex-1 pb-6 lg:pb-12">
               <div className="hero-badge" style={{ marginBottom: 20 }}>
                 <span className="green-dot" />
                 <span>500+ Specialists Available Now</span>
@@ -268,9 +271,9 @@ export default function LandingPage() {
             </motion.div>
 
             {/* Right: Offers Carousel + Doctor Card */}
-            <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} style={{ flex: "1 1 480px", display: "flex", flexDirection: "column", gap: 16, paddingBottom: 24 }}>
+            <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} className="w-full lg:w-1/2 lg:flex-1 flex flex-col gap-4 pb-12 lg:pb-24">
               {/* Offer Card Switcher */}
-              <div style={{ position: "relative", height: 170 }}>
+              <div className="relative h-[200px] sm:h-[170px]">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeOffer}
@@ -284,7 +287,7 @@ export default function LandingPage() {
                     <div style={{ position: "relative", zIndex: 2 }}>
                       <div style={{ display: "inline-block", background: "rgba(255,255,255,.25)", borderRadius: 100, padding: "3px 12px", fontSize: 12, fontWeight: 800, marginBottom: 8 }}>{OFFERS[activeOffer].badge}</div>
                       <div style={{ fontSize: 13, fontWeight: 800, opacity: .85, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>{OFFERS[activeOffer].tag}</div>
-                      <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 4 }}>{OFFERS[activeOffer].title}</div>
+                      <div style={{ fontSize: "clamp(18px, 3vw, 22px)", fontWeight: 900, marginBottom: 4 }}>{OFFERS[activeOffer].title}</div>
                       <div style={{ fontSize: 14, opacity: .85 }}>{OFFERS[activeOffer].sub}</div>
                       <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                         Claim Offer <ArrowRight style={{ width: 14, height: 14 }} />
@@ -300,7 +303,7 @@ export default function LandingPage() {
               </div>
 
               {/* Live Consult Widget */}
-              <div style={{ background: "var(--landing-surface)", borderRadius: 20, padding: "18px 20px", border: "1.5px solid var(--landing-border)", display: "flex", gap: 16, alignItems: "center" }}>
+              <div className="bg-[var(--landing-surface)] rounded-[20px] p-4 sm:p-5 border border-[var(--landing-border)] flex gap-4 items-center">
                 <div style={{ position: "relative", flexShrink: 0 }}>
                   <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC22,#00A65122)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👩‍⚕️</div>
                   <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, background: "#00A651", borderRadius: "50%", border: "2px solid var(--landing-online-avatar-border)" }} />
@@ -316,12 +319,12 @@ export default function LandingPage() {
               </div>
 
               {/* Quick Stats Row */}
-              <div style={{ display: "flex", gap: 12 }}>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 {[{ icon: "⏱", label: "Avg Response", val: "< 3 min" }, { icon: "🏥", label: "Cities", val: "200+" }, { icon: "💚", label: "Satisfaction", val: "98%" }].map((s, i) => (
-                  <div key={i} style={{ flex: 1, background: "var(--landing-surface)", borderRadius: 16, padding: "14px 12px", border: "1.5px solid var(--landing-border)", textAlign: "center" }}>
-                    <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
-                    <div style={{ fontSize: 16, fontWeight: 900, color: "var(--landing-heading)" }}>{s.val}</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "var(--landing-muted)" }}>{s.label}</div>
+                  <div key={i} className="bg-[var(--landing-surface)] rounded-2xl p-2 sm:p-3.5 border border-[var(--landing-border)] text-center flex flex-col justify-center items-center">
+                    <div className="text-lg sm:text-2xl mb-1">{s.icon}</div>
+                    <div className="text-xs sm:text-base font-black text-[var(--landing-heading)] whitespace-nowrap">{s.val}</div>
+                    <div className="text-[9px] sm:text-[11px] font-bold text-[var(--landing-muted)] mt-0.5 leading-tight">{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -417,22 +420,22 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14, padding: "10px 14px", background: "#F4F6FB", borderRadius: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14, padding: "10px 14px", background: "var(--landing-muted-surface)", border: "1.5px solid var(--landing-border)", borderRadius: 12 }}>
                 <span style={{ display: "flex", gap: 2 }}>
                   {[...Array(5)].map((_, si) => <Star key={si} style={{ width: 12, height: 12, fill: "#FFB800", color: "#FFB800" }} />)}
                 </span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "#0D1B2A" }}>{doc.rating}</span>
-                <span style={{ fontSize: 12, color: "#888" }}>({doc.reviews.toLocaleString()} reviews)</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "var(--landing-heading)" }}>{doc.rating}</span>
+                <span style={{ fontSize: 12, color: "var(--landing-muted)" }}>({doc.reviews.toLocaleString()} reviews)</span>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div>
-                  <span style={{ fontSize: 12, color: "#888", fontWeight: 600 }}>Starts at </span>
+                  <span style={{ fontSize: 12, color: "var(--landing-muted)", fontWeight: 600 }}>Starts at </span>
                   <span style={{ fontSize: 18, fontWeight: 900, color: "#00A651" }}>{doc.fee}</span>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
-                  <button style={{ background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "#333" }}>
-                    <MessageCircle style={{ width: 12, height: 12, display: "inline", marginRight: 4 }} />Chat
+                  <button style={{ background: "var(--landing-muted-surface)", border: "1.5px solid var(--landing-border)", borderRadius: 100, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--landing-heading)", display: "flex", alignItems: "center", gap: 4 }}>
+                    <MessageCircle style={{ width: 12, height: 12 }} /> Chat
                   </button>
                   <button style={{ background: "#0066CC", color: "#fff", border: "none", borderRadius: 100, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                     Book Now
@@ -473,15 +476,15 @@ export default function LandingPage() {
           <div style={{ position: "absolute", top: "30%", left: "16%", right: "16%", height: 2, background: "linear-gradient(90deg, #0066CC, #00A651)", opacity: .2, display: "none" }} className="md:block" />
           {HOW.map((h, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * .15 }}
-              style={{ background: "#fff", borderRadius: 24, padding: 32, border: "1.5px solid #E8EDF5", textAlign: "center", position: "relative" }}>
-              <div style={{ position: "absolute", top: 20, right: 24, fontSize: 48, fontWeight: 900, color: "#F4F6FB", lineHeight: 1, fontFamily: "'Syne', sans-serif" }}>{h.step}</div>
+              className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/60 rounded-[24px] p-8 text-center relative">
+              <div className="absolute top-5 right-6 text-5xl font-black text-slate-100 dark:text-slate-800/40 leading-none select-none font-sans">{h.step}</div>
               <div style={{ width: 68, height: 68, borderRadius: "50%", background: `${h.color}18`, border: `2px solid ${h.color}30`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                 <h.icon style={{ width: 30, height: 30, color: h.color }} />
               </div>
               <div style={{ fontSize: 20, fontWeight: 800, color: "#0D1B2A", marginBottom: 10 }}>{h.title}</div>
               <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.7 }}>{h.desc}</div>
               {i < HOW.length - 1 && (
-                <div style={{ position: "absolute", right: -12, top: "50%", transform: "translateY(-50%)", width: 24, height: 24, background: "#fff", border: "1.5px solid #E8EDF5", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
+                <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full flex items-center justify-center z-10">
                   <ChevronRight style={{ width: 14, height: 14, color: "#0066CC" }} />
                 </div>
               )}
@@ -522,17 +525,17 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} style={{ flex: "1 1 360px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="w-full lg:w-auto lg:flex-[1_1_360px] grid grid-cols-2 gap-4">
               {[
-                { icon: "🏆", title: "Best Rehab Platform", sub: "HealthTech Awards 2024", bg: "#FFF9E6" },
-                { icon: "📱", title: "Top App Award", sub: "Google Play Store 2024", bg: "#E6F7EE" },
-                { icon: "🌟", title: "ISO 9001 Certified", sub: "Quality Management", bg: "#EBF4FF" },
-                { icon: "🤝", title: "50+ Hospital Partners", sub: "Nationwide Network", bg: "#F3EAF9" },
+                { icon: "🏆", title: "Best Rehab Platform", sub: "HealthTech Awards 2024", colorClass: "bg-[#FFF9E6] dark:bg-amber-950/20 border-amber-100/50 dark:border-amber-900/30 text-amber-800 dark:text-amber-300" },
+                { icon: "📱", title: "Top App Award", sub: "Google Play Store 2024", colorClass: "bg-[#E6F7EE] dark:bg-emerald-950/20 border-emerald-100/50 dark:border-emerald-900/30 text-emerald-800 dark:text-emerald-300" },
+                { icon: "🌟", title: "ISO 9001 Certified", sub: "Quality Management", colorClass: "bg-[#EBF4FF] dark:bg-blue-950/20 border-blue-100/50 dark:border-blue-900/30 text-blue-800 dark:text-blue-300" },
+                { icon: "🤝", title: "50+ Hospital Partners", sub: "Nationwide Network", colorClass: "bg-[#F3EAF9] dark:bg-purple-950/20 border-purple-100/50 dark:border-purple-900/30 text-purple-800 dark:text-purple-300" },
               ].map((a, i) => (
-                <motion.div key={i} whileHover={{ scale: 1.04 }} style={{ background: a.bg, borderRadius: 20, padding: 24, textAlign: "center", cursor: "pointer" }}>
+                <motion.div key={i} whileHover={{ scale: 1.04 }} className={`rounded-[20px] p-6 text-center cursor-pointer border transition-all ${a.colorClass}`}>
                   <div style={{ fontSize: 36, marginBottom: 10 }}>{a.icon}</div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: "#0D1B2A", marginBottom: 4 }}>{a.title}</div>
-                  <div style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>{a.sub}</div>
+                  <div className="text-[14px] font-black mb-1 leading-tight">{a.title}</div>
+                  <div className="text-[12px] opacity-75 font-semibold">{a.sub}</div>
                 </motion.div>
               ))}
             </motion.div>
@@ -615,7 +618,7 @@ export default function LandingPage() {
       <section style={{ padding: "64px 24px", background: "#fff" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
           <motion.div initial={{ opacity: 0, scale: .95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
-            style={{ background: "linear-gradient(135deg,#EBF4FF,#E6F7EE)", borderRadius: 32, padding: "56px 48px", textAlign: "center", border: "1.5px solid #D0E8FF", position: "relative", overflow: "hidden" }}>
+            className="bg-gradient-to-br from-[#EBF4FF] to-[#E6F7EE] dark:from-slate-900/60 dark:to-slate-950/60 rounded-[32px] p-6 sm:p-12 text-center border border-[#D0E8FF] dark:border-white/10 relative overflow-hidden">
             <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, background: "rgba(0,102,204,.06)", borderRadius: "50%" }} />
             <div style={{ position: "absolute", bottom: -30, left: -30, width: 120, height: 120, background: "rgba(0,166,81,.06)", borderRadius: "50%" }} />
             <div style={{ position: "relative", zIndex: 2 }}>
@@ -633,7 +636,7 @@ export default function LandingPage() {
                   </button>
                 </Link>
                 <Link href="/doctors">
-                  <button style={{ background: "#fff", color: "#0D1B2A", border: "2px solid #E8EDF5", borderRadius: 100, padding: "15px 32px", fontSize: 16, fontWeight: 700, cursor: "pointer", transition: "all .2s" }}>
+                  <button className="bg-white dark:bg-slate-900 text-[#0D1B2A] dark:text-slate-100 border-2 border-slate-200 dark:border-slate-800 rounded-full py-3.5 px-8 text-base font-bold transition-all">
                     Browse Specialists
                   </button>
                 </Link>
