@@ -71,6 +71,13 @@ def book_appointment(
             doctor_profile = doctor_profile[0] if doctor_profile else {}
         doctor_name = f"{doctor_profile.get('first_name', '')} {doctor_profile.get('last_name', '')}".strip() or "Unknown"
 
+        # ── Ensure patient record exists in patients table ──
+        pat_check = supabase_admin.table("patients").select("profile_id").eq("profile_id", profile["id"]).execute()
+        if not pat_check.data:
+            supabase_admin.table("patients").insert({
+                "profile_id": profile["id"]
+            }).execute()
+
         # ── Slot conflict check ──
         existing = supabase_admin.table("appointments").select("id").eq(
             "doctor_id", data.doctor_id
