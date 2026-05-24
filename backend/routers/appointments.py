@@ -71,12 +71,15 @@ def book_appointment(
             doctor_profile = doctor_profile[0] if doctor_profile else {}
         doctor_name = f"{doctor_profile.get('first_name', '')} {doctor_profile.get('last_name', '')}".strip() or "Unknown"
 
-        # ── Ensure patient record exists in patients table ──
-        pat_check = supabase_admin.table("patients").select("profile_id").eq("profile_id", profile["id"]).execute()
+        # ── Ensure patient record exists in patients table and get its primary key ID ──
+        pat_check = supabase_admin.table("patients").select("id").eq("profile_id", profile["id"]).execute()
         if not pat_check.data:
-            supabase_admin.table("patients").insert({
+            new_pat = supabase_admin.table("patients").insert({
                 "profile_id": profile["id"]
             }).execute()
+            patient_db_id = new_pat.data[0]["id"]
+        else:
+            patient_db_id = pat_check.data[0]["id"]
 
         # ── Slot conflict check ──
         existing = supabase_admin.table("appointments").select("id").eq(
@@ -98,7 +101,7 @@ def book_appointment(
                 "currency": "INR",
                 "receipt": f"apt_{profile['id'][:8]}_{int(datetime.now().timestamp())}",
                 "notes": {
-                    "patient_id": profile["id"],
+                    "patient_id": patient_db_id,
                     "doctor_id": data.doctor_id,
                     "appointment_time": data.appointment_date.isoformat()
                 }
@@ -107,7 +110,7 @@ def book_appointment(
 
             # Insert pending appointment
             res = supabase_admin.table("appointments").insert({
-                "patient_id": profile["id"],
+                "patient_id": patient_db_id,
                 "doctor_id": data.doctor_id,
                 "appointment_time": data.appointment_date.isoformat(),
                 "session_type": data.session_type,
@@ -132,7 +135,7 @@ def book_appointment(
 
         # ── Mock Mode (No Razorpay config) ──
         res = supabase_admin.table("appointments").insert({
-            "patient_id": profile["id"],
+            "patient_id": patient_db_id,
             "doctor_id": data.doctor_id,
             "appointment_time": data.appointment_date.isoformat(),
             "session_type": data.session_type,
@@ -238,9 +241,13 @@ def get_appointment_stats(
     
     try:
         if role == "patient":
+            # Get actual patient database primary key ID
+            pat_res = supabase_admin.table("patients").select("id").eq("profile_id", profile_id).execute()
+            patient_db_id = pat_res.data[0]["id"] if pat_res.data else profile_id
+
             # 1. Total sessions completed
             comp_res = supabase_admin.table("appointments").select("id").eq(
-                "patient_id", profile_id
+                "patient_id", patient_db_id
             ).eq("status", "completed").execute()
             
             sessions_completed = len(comp_res.data or [])

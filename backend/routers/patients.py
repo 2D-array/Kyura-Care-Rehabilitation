@@ -89,9 +89,13 @@ def get_patient_appointments(
     client: Client = Depends(get_supabase_client)
 ):
     try:
+        # Get actual patient database primary key ID to satisfy foreign key structure
+        pat_res = supabase_admin.table("patients").select("id").eq("profile_id", profile["id"]).execute()
+        patient_db_id = pat_res.data[0]["id"] if pat_res.data else profile["id"]
+
         res = client.table("appointments").select(
             "*, doctors(*, profiles(first_name, last_name))"
-        ).eq("patient_id", profile["id"]).order("appointment_date", desc=True).execute()
+        ).eq("patient_id", patient_db_id).order("appointment_date", desc=True).execute()
         return res.data
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

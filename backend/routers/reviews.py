@@ -28,6 +28,10 @@ def create_review(
         if not doc_res.data:
             raise HTTPException(status_code=404, detail="Doctor not found")
 
+        # Get actual patient database primary key ID
+        pat_res = supabase_admin.table("patients").select("id").eq("profile_id", profile["id"]).execute()
+        patient_db_id = pat_res.data[0]["id"] if pat_res.data else profile["id"]
+
         # Basic validation
         if data.rating < 1 or data.rating > 5:
             raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
@@ -41,7 +45,7 @@ def create_review(
                 raise HTTPException(status_code=404, detail="Appointment slot not found")
             
             appt = appt_res.data[0]
-            if appt["patient_id"] != profile["id"]:
+            if appt["patient_id"] != patient_db_id:
                 raise HTTPException(status_code=403, detail="Not authorized to review this appointment.")
             if appt["doctor_id"] != data.doctor_id:
                 raise HTTPException(status_code=400, detail="Appointment doctor does not match requested doctor.")
@@ -55,7 +59,7 @@ def create_review(
         else:
             # If no appointment ID was supplied, find any completed appointment between this doctor and patient
             completed_appt = supabase_admin.table("appointments").select("id").eq(
-                "patient_id", profile["id"]
+                "patient_id", patient_db_id
             ).eq(
                 "doctor_id", data.doctor_id
             ).eq(
@@ -78,7 +82,7 @@ def create_review(
 
         # Insert review linked to the verified appointment_id
         res = supabase_admin.table("reviews").insert({
-            "patient_id": profile["id"],
+            "patient_id": patient_db_id,
             "doctor_id": data.doctor_id,
             "rating": data.rating,
             "comment": data.comment,
