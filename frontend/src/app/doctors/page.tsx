@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, Suspense } from "react"
 import { motion } from "framer-motion"
 import { Check, Search, Filter, Star, DollarSign, Calendar, Video, Home as HomeIcon, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -84,7 +84,7 @@ const CATEGORIES = [
   }
 ]
 
-export default function DoctorDiscovery() {
+function DoctorDiscoveryContent() {
   const searchParams = useSearchParams()
   const categorySlug = searchParams.get("spec") || ""
   const query = searchParams.get("q") || ""
@@ -424,5 +424,17 @@ export default function DoctorDiscovery() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function DoctorDiscovery() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+      </div>
+    }>
+      <DoctorDiscoveryContent />
+    </Suspense>
   )
 }
