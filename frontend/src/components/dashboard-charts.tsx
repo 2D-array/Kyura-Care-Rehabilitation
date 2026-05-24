@@ -1,7 +1,7 @@
 "use client"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
-const data = [
+const defaultData = [
   { name: 'W1', progress: 20 },
   { name: 'W2', progress: 35 },
   { name: 'W3', progress: 45 },
@@ -10,11 +10,16 @@ const data = [
   { name: 'W6', progress: 95 },
 ]
 
-export function RecoveryChart() {
+interface RecoveryChartProps {
+  data?: { name: string; progress: number }[]
+}
+
+export function RecoveryChart({ data: customData }: RecoveryChartProps) {
+  const chartData = customData || defaultData;
   return (
     <div className="h-[250px] w-full mt-4" style={{ minWidth: 0, minHeight: 250 }}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
           <defs>
             <linearGradient id="colorProgress" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3}/>

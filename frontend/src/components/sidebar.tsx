@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, Calendar, Search, User, LogOut, Activity, ShieldCheck } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { LayoutDashboard, Calendar, Search, User, LogOut, Activity, ShieldCheck, Users } from "lucide-react"
 import { ModeToggle } from "./mode-toggle"
 import { useUser } from "@/context/UserContext"
 import { Avatar, AvatarFallback } from "./ui/avatar"
@@ -12,11 +12,28 @@ const routes = [
   { label: "My Profile", icon: User, href: "/dashboard/profile" },
   { label: "Find Doctors", icon: Search, href: "/doctors" },
   { label: "Appointments", icon: Calendar, href: "/dashboard/sessions" },
+  { label: "PhysioPass", icon: ShieldCheck, href: "/plans" },
+]
+
+const doctorRoutes = [
+  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+  { label: "My Profile", icon: User, href: "/dashboard/profile" },
+  { label: "My Patients", icon: Users, href: "/dashboard/patients" },
+  { label: "Appointments", icon: Calendar, href: "/dashboard/sessions" },
+  { label: "Availability", icon: Calendar, href: "/dashboard/availability" },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const { profile, user, logout } = useUser()
+
+  let navRoutes = profile?.role === "doctor" ? doctorRoutes : routes
+  if (profile?.role === "admin") {
+    navRoutes = [
+      ...routes,
+      { label: "Admin Panel", icon: ShieldCheck, href: "/admin" }
+    ]
+  }
 
   const getInitials = () => {
     if (profile?.first_name && profile?.last_name) {
@@ -62,7 +79,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-1">
-        {routes.map((route) => {
+        {navRoutes.map((route) => {
           const isActive = pathname === route.href
           return (
             <Link

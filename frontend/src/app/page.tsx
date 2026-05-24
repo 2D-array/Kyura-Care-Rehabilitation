@@ -103,10 +103,40 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <main className="flex flex-col min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', 'Nunito', sans-serif", background: "#F4F6FB" }}>
+    <main className="landing-page flex flex-col min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', 'Nunito', sans-serif", background: "var(--landing-page-bg)" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800&display=swap');
         * { box-sizing: border-box; }
+        .landing-page {
+          --landing-page-bg: #F4F6FB;
+          --landing-hero-bg: linear-gradient(135deg, #EBF4FF 0%, #F0FFF8 50%, #FFF4EE 100%);
+          --landing-hero-overlay: radial-gradient(circle at 20% 50%, rgba(0,102,204,.08) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0,166,81,.08) 0%, transparent 60%);
+          --landing-surface: #fff;
+          --landing-muted-surface: #F4F6FB;
+          --landing-hover-surface: #EBF4FF;
+          --landing-border: #E8EDF5;
+          --landing-heading: #0D1B2A;
+          --landing-body: #4A5568;
+          --landing-muted: #888;
+          --landing-chip-text: #444;
+          --landing-button-text: #333;
+          --landing-online-avatar-border: #fff;
+        }
+        .dark .landing-page {
+          --landing-page-bg: #020617;
+          --landing-hero-bg: linear-gradient(135deg, #020617 0%, #03111f 52%, #04130f 100%);
+          --landing-hero-overlay: radial-gradient(circle at 20% 50%, rgba(0,102,204,.16) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0,166,81,.14) 0%, transparent 60%);
+          --landing-surface: rgba(15, 23, 42, .82);
+          --landing-muted-surface: rgba(15, 23, 42, .72);
+          --landing-hover-surface: rgba(30, 41, 59, .9);
+          --landing-border: rgba(255,255,255,.1);
+          --landing-heading: #f8fafc;
+          --landing-body: #94a3b8;
+          --landing-muted: #94a3b8;
+          --landing-chip-text: #e2e8f0;
+          --landing-button-text: #e2e8f0;
+          --landing-online-avatar-border: #020617;
+        }
         .navlink { font-size:14px; font-weight:600; color:#1a1a2e; transition:color .2s; cursor:pointer; }
         .navlink:hover { color:#0066CC; }
         .pill-btn { display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:100px;font-size:13px;font-weight:700;transition:all .2s; cursor:pointer; }
@@ -132,12 +162,58 @@ export default function LandingPage() {
         .green-dot { width:8px;height:8px;background:#00A651;border-radius:50%;display:inline-block;margin-right:6px; }
         .floating { animation: floatUpDown 4s ease-in-out infinite; }
         @keyframes floatUpDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        .dark .landing-page,
+        .dark .landing-page section[style*="#F4F6FB"],
+        .dark .landing-page section[style*="#fff"],
+        .dark .landing-page [style*="linear-gradient(135deg, #EBF4FF"],
+        .dark .landing-page [style*="linear-gradient(135deg,#EBF4FF"],
+        .dark .landing-page [style*="background: #F4F6FB"],
+        .dark .landing-page [style*="background: #fff"],
+        .dark .landing-page [style*="background: #EBF4FF"],
+        .dark .landing-page [style*="background: #E6F7EE"],
+        .dark .landing-page [style*="background: #FFF4EE"],
+        .dark .landing-page [style*="background: #FFF9E6"],
+        .dark .landing-page [style*="background: #F3EAF9"],
+        .dark .landing-page [style*="background: #FFF0E8"] {
+          background: #020617 !important;
+        }
+        .dark .landing-page .service-card,
+        .dark .landing-page .doc-card,
+        .dark .landing-page .testi-card,
+        .dark .landing-page [style*="border: 1.5px solid #E8EDF5"] {
+          background: rgba(15, 23, 42, .82) !important;
+          border-color: rgba(255,255,255,.08) !important;
+        }
+        .dark .landing-page [style*="border: 2px solid #E8EDF5"],
+        .dark .landing-page [style*="borderTop: 1.5px solid #E8EDF5"] {
+          border-color: rgba(255,255,255,.1) !important;
+        }
+        .dark .landing-page [style*="color: #0D1B2A"],
+        .dark .landing-page [style*="color:#0D1B2A"],
+        .dark .landing-page [style*="color: #1a1a2e"],
+        .dark .landing-page [style*="color: #333"],
+        .dark .landing-page [style*="color: #444"] {
+          color: #f8fafc !important;
+        }
+        .dark .landing-page [style*="color: #4A5568"],
+        .dark .landing-page [style*="color: #64748B"],
+        .dark .landing-page [style*="color: #475569"],
+        .dark .landing-page [style*="color: #334155"],
+        .dark .landing-page [style*="color: #888"] {
+          color: #94a3b8 !important;
+        }
+        .dark .landing-page .hero-badge,
+        .dark .landing-page .section-tag,
+        .dark .landing-page .stat-pill {
+          background: rgba(79,70,229,.18) !important;
+          border-color: rgba(129,140,248,.25) !important;
+        }
       `}</style>
 
 
       {/* HERO */}
-      <motion.section ref={heroRef} style={{ opacity: heroOpacity, y: heroY, position: "relative", background: "linear-gradient(135deg, #EBF4FF 0%, #F0FFF8 50%, #FFF4EE 100%)", padding: "0", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(0,102,204,.08) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0,166,81,.08) 0%, transparent 60%)", pointerEvents: "none" }} />
+      <motion.section ref={heroRef} style={{ opacity: heroOpacity, y: heroY, position: "relative", background: "var(--landing-hero-bg)", padding: "0", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "var(--landing-hero-overlay)", pointerEvents: "none" }} />
 
         <div style={{ maxWidth: 1320, margin: "0 auto", padding: "48px 24px 0" }}>
           <div style={{ display: "flex", gap: 48, alignItems: "center" }}>
@@ -147,20 +223,20 @@ export default function LandingPage() {
                 <span className="green-dot" />
                 <span>500+ Specialists Available Now</span>
               </div>
-              <h1 style={{ fontSize: "clamp(36px, 5vw, 58px)", fontWeight: 900, color: "#0D1B2A", lineHeight: 1.1, marginBottom: 18, fontFamily: "'Syne', sans-serif" }}>
+              <h1 style={{ fontSize: "clamp(36px, 5vw, 58px)", fontWeight: 900, color: "var(--landing-heading)", lineHeight: 1.1, marginBottom: 18, fontFamily: "'Syne', sans-serif" }}>
                 Your Fastest Path to<br />
                 <span className="gradient-text">Complete Recovery</span>
               </h1>
-              <p style={{ fontSize: 18, color: "#4A5568", lineHeight: 1.7, marginBottom: 28, maxWidth: 500 }}>
-                Expert physiotherapy at home, in-clinic, or online. India's most trusted rehabilitation platform — used by <strong>2 million+ patients.</strong>
+              <p style={{ fontSize: 18, color: "var(--landing-body)", lineHeight: 1.7, marginBottom: 28, maxWidth: 500 }}>
+                Expert physiotherapy at home, in-clinic, or online. India&apos;s most trusted rehabilitation platform — used by <strong>2 million+ patients.</strong>
               </p>
 
               {/* Quick Search */}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
                 {["Knee Pain", "Back Pain", "Sports Injury", "Stroke Rehab", "Post Surgery"].map((tag, i) => (
-                  <div key={i} style={{ background: "#fff", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "6px 14px", fontSize: 13, fontWeight: 600, color: "#444", cursor: "pointer", transition: "all .2s" }}
+                  <div key={i} style={{ background: "var(--landing-surface)", border: "1.5px solid var(--landing-border)", borderRadius: 100, padding: "6px 14px", fontSize: 13, fontWeight: 600, color: "var(--landing-chip-text)", cursor: "pointer", transition: "all .2s" }}
                     onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = "#0066CC"; (e.target as HTMLElement).style.color = "#0066CC" }}
-                    onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = "#E8EDF5"; (e.target as HTMLElement).style.color = "#444" }}>
+                    onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = "var(--landing-border)"; (e.target as HTMLElement).style.color = "var(--landing-chip-text)" }}>
                     {tag}
                   </div>
                 ))}
@@ -175,7 +251,7 @@ export default function LandingPage() {
                   </button>
                 </Link>
                 <Link href="/doctors">
-                  <button style={{ background: "#fff", color: "#0D1B2A", border: "2px solid #E8EDF5", borderRadius: 100, padding: "14px 28px", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all .2s" }}>
+                  <button style={{ background: "var(--landing-surface)", color: "var(--landing-heading)", border: "2px solid var(--landing-border)", borderRadius: 100, padding: "14px 28px", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all .2s" }}>
                     <PlayCircle style={{ width: 18, height: 18, color: "#FF6B35" }} /> How It Works
                   </button>
                 </Link>
@@ -184,8 +260,8 @@ export default function LandingPage() {
               <div style={{ display: "flex", gap: 28 }}>
                 {[{ val: "2M+", lbl: "Patients" }, { val: "500+", lbl: "Specialists" }, { val: "4.9★", lbl: "App Rating" }].map((s, i) => (
                   <div key={i}>
-                    <div style={{ fontSize: 22, fontWeight: 900, color: "#0D1B2A" }}>{s.val}</div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: "#888" }}>{s.lbl}</div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: "var(--landing-heading)" }}>{s.val}</div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--landing-muted)" }}>{s.lbl}</div>
                   </div>
                 ))}
               </div>
@@ -224,17 +300,17 @@ export default function LandingPage() {
               </div>
 
               {/* Live Consult Widget */}
-              <div style={{ background: "#fff", borderRadius: 20, padding: "18px 20px", border: "1.5px solid #E8EDF5", display: "flex", gap: 16, alignItems: "center" }}>
+              <div style={{ background: "var(--landing-surface)", borderRadius: 20, padding: "18px 20px", border: "1.5px solid var(--landing-border)", display: "flex", gap: 16, alignItems: "center" }}>
                 <div style={{ position: "relative", flexShrink: 0 }}>
                   <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC22,#00A65122)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👩‍⚕️</div>
-                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, background: "#00A651", borderRadius: "50%", border: "2px solid #fff" }} />
+                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, background: "#00A651", borderRadius: "50%", border: "2px solid var(--landing-online-avatar-border)" }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#1a1a2e" }}>Dr. Priya Sharma is online</div>
-                  <div style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>Sports Physio • 12 yrs exp • ⭐ 4.9</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "var(--landing-heading)" }}>Dr. Priya Sharma is online</div>
+                  <div style={{ fontSize: 12, color: "var(--landing-muted)", marginBottom: 8 }}>Sports Physio • 12 yrs exp • ⭐ 4.9</div>
                   <div style={{ display: "flex", gap: 8 }}>
                     <button style={{ flex: 1, background: "#0066CC", color: "#fff", border: "none", borderRadius: 100, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Video Call</button>
-                    <button style={{ flex: 1, background: "#F4F6FB", color: "#333", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Chat Now</button>
+                    <button style={{ flex: 1, background: "var(--landing-muted-surface)", color: "var(--landing-button-text)", border: "1.5px solid var(--landing-border)", borderRadius: 100, padding: "7px 0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Chat Now</button>
                   </div>
                 </div>
               </div>
@@ -242,10 +318,10 @@ export default function LandingPage() {
               {/* Quick Stats Row */}
               <div style={{ display: "flex", gap: 12 }}>
                 {[{ icon: "⏱", label: "Avg Response", val: "< 3 min" }, { icon: "🏥", label: "Cities", val: "200+" }, { icon: "💚", label: "Satisfaction", val: "98%" }].map((s, i) => (
-                  <div key={i} style={{ flex: 1, background: "#fff", borderRadius: 16, padding: "14px 12px", border: "1.5px solid #E8EDF5", textAlign: "center" }}>
+                  <div key={i} style={{ flex: 1, background: "var(--landing-surface)", borderRadius: 16, padding: "14px 12px", border: "1.5px solid var(--landing-border)", textAlign: "center" }}>
                     <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
-                    <div style={{ fontSize: 16, fontWeight: 900, color: "#0D1B2A" }}>{s.val}</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#888" }}>{s.label}</div>
+                    <div style={{ fontSize: 16, fontWeight: 900, color: "var(--landing-heading)" }}>{s.val}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "var(--landing-muted)" }}>{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -254,13 +330,13 @@ export default function LandingPage() {
         </div>
 
         {/* Specialty Chips Row */}
-        <div style={{ background: "#fff", borderTop: "1.5px solid #E8EDF5", marginTop: 0 }}>
+        <div style={{ background: "var(--landing-surface)", borderTop: "1.5px solid var(--landing-border)", marginTop: 0 }}>
           <div style={{ maxWidth: 1320, margin: "0 auto", padding: "16px 24px", display: "flex", gap: 10, overflowX: "auto", alignItems: "center" }} className="scroll-x">
-            <span style={{ fontSize: 12, fontWeight: 800, color: "#888", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: ".06em", marginRight: 8 }}>Find by:</span>
+            <span style={{ fontSize: 12, fontWeight: 800, color: "var(--landing-muted)", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: ".06em", marginRight: 8 }}>Find by:</span>
             {SPECIALTIES.map((sp, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: "#F4F6FB", border: "1.5px solid #E8EDF5", borderRadius: 100, padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap", fontSize: 13, fontWeight: 700, color: "#333", transition: "all .2s", flexShrink: 0 }}
-                onMouseEnter={e => { (e.currentTarget.style.background = "#EBF4FF"); (e.currentTarget.style.borderColor = "#0066CC"); (e.currentTarget.style.color = "#0066CC") }}
-                onMouseLeave={e => { (e.currentTarget.style.background = "#F4F6FB"); (e.currentTarget.style.borderColor = "#E8EDF5"); (e.currentTarget.style.color = "#333") }}>
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--landing-muted-surface)", border: "1.5px solid var(--landing-border)", borderRadius: 100, padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap", fontSize: 13, fontWeight: 700, color: "var(--landing-button-text)", transition: "all .2s", flexShrink: 0 }}
+                onMouseEnter={e => { e.currentTarget.style.background = "var(--landing-hover-surface)"; e.currentTarget.style.borderColor = "#0066CC"; e.currentTarget.style.color = "#0066CC" }}
+                onMouseLeave={e => { e.currentTarget.style.background = "var(--landing-muted-surface)"; e.currentTarget.style.borderColor = "var(--landing-border)"; e.currentTarget.style.color = "var(--landing-button-text)" }}>
                 <span style={{ fontSize: 18 }}>{sp.icon}</span> {sp.label}
               </div>
             ))}
@@ -421,7 +497,7 @@ export default function LandingPage() {
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} style={{ flex: "1 1 400px" }}>
               <div className="section-tag">Why PhysioNow?</div>
               <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 900, color: "#0D1B2A", margin: "8px 0 16px", fontFamily: "'Syne', sans-serif" }}>
-                India's Most Trusted<br />Recovery Platform
+                India&apos;s Most Trusted<br />Recovery Platform
               </h2>
               <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 28 }}>
                 We combine cutting-edge technology with compassionate care to ensure every patient gets the best possible outcome — faster than any traditional approach.
@@ -470,7 +546,7 @@ export default function LandingPage() {
           <div style={{ textAlign: "center", marginBottom: 44 }}>
             <div className="section-tag">Real Stories</div>
             <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 900, color: "#0D1B2A", margin: "0 0 10px", fontFamily: "'Syne', sans-serif" }}>
-              2 Million Patients Can't Be Wrong
+              2 Million Patients Can&apos;t Be Wrong
             </h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
@@ -479,7 +555,7 @@ export default function LandingPage() {
                 <div style={{ display: "flex", gap: 3, marginBottom: 12 }}>
                   {[...Array(t.rating)].map((_, si) => <Star key={si} style={{ width: 16, height: 16, fill: "#FFB800", color: "#FFB800" }} />)}
                 </div>
-                <p style={{ fontSize: 15, color: "#334155", lineHeight: 1.7, fontStyle: "italic", marginBottom: 16 }}>"{t.text}"</p>
+                <p style={{ fontSize: 15, color: "#334155", lineHeight: 1.7, fontStyle: "italic", marginBottom: 16 }}>&quot;{t.text}&quot;</p>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg,#0066CC,#00A651)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16 }}>{t.name[0]}</div>
@@ -585,7 +661,7 @@ export default function LandingPage() {
                 </div>
                 <span style={{ fontSize: 16, fontWeight: 900, color: "#fff", fontFamily: "'Syne', sans-serif" }}>PhysioNow</span>
               </div>
-              <p style={{ fontSize: 13, lineHeight: 1.7 }}>India's #1 physiotherapy & rehabilitation platform. Connecting patients with expert specialists nationwide.</p>
+              <p style={{ fontSize: 13, lineHeight: 1.7 }}>India&apos;s #1 physiotherapy & rehabilitation platform. Connecting patients with expert specialists nationwide.</p>
             </div>
             {[
               { title: "Services", links: ["Online Consultation", "At-Home Physio", "In-Clinic Sessions", "Recovery Kits", "PhysioPass"] },
@@ -607,7 +683,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div style={{ borderTop: "1px solid rgba(255,255,255,.1)", paddingTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-            <div style={{ fontSize: 13 }}>© 2025 PhysioNow. All rights reserved. | <span style={{ cursor: "pointer" }}>Privacy Policy</span> | <span style={{ cursor: "pointer" }}>Terms of Service</span></div>
+            <div style={{ fontSize: 13 }}>© 2025 PhysioNow. All rights reserved. | <span style={{ cursor: "pointer" }}>Privacy Policy</span> | <span style={{ cursor: "pointer" }}>Terms of Service</span> | <Link href="/admin/login" style={{ color: "rgba(255,255,255,.5)", cursor: "pointer", transition: "color .2s" }} onMouseEnter={e => e.currentTarget.style.color = "#fff"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.5)"}>Admin Panel</Link></div>
             <div style={{ display: "flex", gap: 14 }}>
               {["🐦", "📘", "📸", "💼"].map((s, i) => (
                 <div key={i} style={{ width: 32, height: 32, background: "rgba(255,255,255,.1)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 14, transition: "background .2s" }}

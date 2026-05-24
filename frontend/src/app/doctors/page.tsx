@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
-import { Check, Search, Filter, Star, MapPin, DollarSign, Calendar, Video, Home as HomeIcon, Building2 } from "lucide-react"
+import { Check, Search, Filter, Star, DollarSign, Calendar, Video, Home as HomeIcon, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -12,29 +12,92 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { createBrowserClient } from '@supabase/ssr'
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
-const SPECIALTIES = [
-  "Neurological Rehabilitation",
-  "Orthopedic",
-  "Sports Injury",
-  "Pediatric Physio",
-  "Cardiac Rehabilitation",
-  "Chronic Pain Management"
+type DoctorProfile = {
+  first_name?: string
+  last_name?: string
+}
+
+type Doctor = {
+  id: string
+  profiles?: DoctorProfile
+  specialty?: string
+  bio?: string
+  consultation_fee?: number
+  years_of_experience?: number
+  available_days?: string
+  is_verified?: boolean
+  average_rating?: number
+  review_count?: number
+  available_session_types?: string[]
+}
+
+const CATEGORIES = [
+  {
+    slug: "ortho",
+    label: "Ortho Physio",
+    specialties: ["Orthopedic", "Orthopedic Therapy", "Ortho Physio"],
+    terms: ["ortho", "orthopedic", "joint", "fracture", "arthritis", "post surgery", "post-surgery"]
+  },
+  {
+    slug: "neuro",
+    label: "Neuro Rehab",
+    specialties: ["Neurological Rehabilitation", "Neuro Rehab"],
+    terms: ["neuro", "neurological", "stroke", "spinal", "parkinson", "multiple sclerosis"]
+  },
+  {
+    slug: "cardiac",
+    label: "Cardiac Rehab",
+    specialties: ["Cardiac Rehabilitation", "Cardiac Rehab"],
+    terms: ["cardiac", "heart", "cardio"]
+  },
+  {
+    slug: "sports",
+    label: "Sports Injury",
+    specialties: ["Sports Injury", "Sports Injury Recovery"],
+    terms: ["sports", "acl", "rotator", "ankle", "athlete", "performance"]
+  },
+  {
+    slug: "pain",
+    label: "Pain Management",
+    specialties: ["Chronic Pain Management", "Pain Management"],
+    terms: ["pain", "chronic pain", "back pain", "fibromyalgia", "headache"]
+  },
+  {
+    slug: "natal",
+    label: "Pre/Post Natal",
+    specialties: ["Pre/Post Natal", "Women's Health", "Maternity Physiotherapy"],
+    terms: ["natal", "prenatal", "postnatal", "pregnancy", "maternity", "pelvic"]
+  },
+  {
+    slug: "geriatric",
+    label: "Geriatric",
+    specialties: ["Geriatric", "Geriatric Care"],
+    terms: ["geriatric", "elderly", "senior", "balance", "fall"]
+  },
+  {
+    slug: "yoga",
+    label: "Yoga Therapy",
+    specialties: ["Yoga Therapy", "Therapeutic Yoga"],
+    terms: ["yoga", "mobility", "flexibility", "breathing"]
+  }
 ]
 
 export default function DoctorDiscovery() {
-  const [doctors, setDoctors] = useState<any[]>([])
+  const searchParams = useSearchParams()
+  const categorySlug = searchParams.get("spec") || ""
+  const query = searchParams.get("q") || ""
+  const category = CATEGORIES.find(item => item.slug === categorySlug)
+
+  const [doctors, setDoctors] = useState<Doctor[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState(query)
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([])
   const [maxFee, setMaxFee] = useState([300])
   const [showOnlineOnly, setShowOnlineOnly] = useState(false)
 
-  useEffect(() => {
-    fetchDoctors()
-  }, [])
-
-  const fetchDoctors = async () => {
+  const fetchDoctors = useCallback(async () => {
     try {
       const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -42,7 +105,7 @@ export default function DoctorDiscovery() {
       )
       
       const { data: { session } } = await supabase.auth.getSession()
-      const headers: any = {}
+      const headers: HeadersInit = {}
       if (session) {
         headers.Authorization = `Bearer ${session.access_token}`
       }
@@ -57,7 +120,24 @@ export default function DoctorDiscovery() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      fetchDoctors()
+    }, 0)
+
+    return () => window.clearTimeout(id)
+  }, [fetchDoctors])
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setSearchQuery(query)
+      setSelectedSpecialties(category?.specialties || [])
+    }, 0)
+
+    return () => window.clearTimeout(id)
+  }, [category?.specialties, categorySlug, query])
 
   const toggleSpecialty = (specialty: string) => {
     setSelectedSpecialties(prev =>
@@ -68,12 +148,18 @@ export default function DoctorDiscovery() {
   }
 
   const filteredDoctors = doctors.filter(doc => {
+    const specialty = doc.specialty?.toLowerCase() || ""
+    const bio = doc.bio?.toLowerCase() || ""
+    const categoryTerms = category?.terms || []
+
     const matchesSearch = searchQuery === "" || 
       `${doc.profiles?.first_name} ${doc.profiles?.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.specialty?.toLowerCase().includes(searchQuery.toLowerCase())
+      specialty.includes(searchQuery.toLowerCase()) ||
+      bio.includes(searchQuery.toLowerCase())
     
     const matchesSpecialty = selectedSpecialties.length === 0 || 
-      selectedSpecialties.includes(doc.specialty)
+      selectedSpecialties.some(selected => specialty.includes(selected.toLowerCase())) ||
+      categoryTerms.some(term => specialty.includes(term) || bio.includes(term))
     
     const matchesFee = !doc.consultation_fee || doc.consultation_fee <= maxFee[0]
     
@@ -92,10 +178,12 @@ export default function DoctorDiscovery() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white mb-4">
-              Find Your <span className="text-indigo-600 dark:text-indigo-400">Specialist</span>
+              {category ? category.label : "Find Your"} <span className="text-indigo-600 dark:text-indigo-400">{category ? "Specialists" : "Specialist"}</span>
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Connect with verified physiotherapists specialized in your recovery needs
+              {category
+                ? "Browse verified physiotherapists filtered for this recovery need."
+                : "Connect with verified physiotherapists specialized in your recovery needs"}
             </p>
           </motion.div>
         </div>
@@ -117,11 +205,13 @@ export default function DoctorDiscovery() {
                   <div>
                     <h4 className="text-sm font-black mb-4 text-slate-900 dark:text-white uppercase tracking-wide">Specialty</h4>
                     <div className="space-y-3 max-h-64 overflow-y-auto">
-                      {SPECIALTIES.map(specialty => (
+                      {CATEGORIES.map(({ label, specialties }) => {
+                        const specialty = specialties[0]
+                        return (
                         <div key={specialty} className="flex items-center space-x-3">
                           <Checkbox 
                             id={specialty} 
-                            checked={selectedSpecialties.includes(specialty)}
+                            checked={selectedSpecialties.some(selected => specialties.includes(selected))}
                             onCheckedChange={() => toggleSpecialty(specialty)}
                             className="border-slate-300 dark:border-slate-700 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600" 
                           />
@@ -129,10 +219,10 @@ export default function DoctorDiscovery() {
                             htmlFor={specialty} 
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-slate-700 dark:text-slate-300 cursor-pointer"
                           >
-                            {specialty}
+                            {label}
                           </label>
                         </div>
-                      ))}
+                      )})}
                     </div>
                   </div>
 
@@ -280,16 +370,17 @@ export default function DoctorDiscovery() {
 
                           {/* Details */}
                           <div className="flex flex-wrap gap-4 pt-2">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                              <span className="font-bold text-slate-700 dark:text-slate-300">
+                                {(doc.average_rating ?? 0) > 0 ? (doc.average_rating ?? 0).toFixed(1) : "New"}
+                              </span>
+                              <span className="text-slate-400 font-medium">({doc.review_count ?? 0} reviews)</span>
+                            </div>
                             {doc.years_of_experience && (
                               <div className="flex items-center gap-2 text-sm">
-                                <Star className="w-4 h-4 text-amber-500" />
-                                <span className="font-bold text-slate-700 dark:text-slate-300">{doc.years_of_experience} years exp.</span>
-                              </div>
-                            )}
-                            {doc.available_days && (
-                              <div className="flex items-center gap-2 text-sm">
                                 <Calendar className="w-4 h-4 text-indigo-500" />
-                                <span className="font-medium text-slate-600 dark:text-slate-400">{doc.available_days}</span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">{doc.years_of_experience} years exp.</span>
                               </div>
                             )}
                           </div>

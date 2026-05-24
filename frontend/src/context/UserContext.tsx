@@ -8,7 +8,7 @@ import type { User, Session } from '@supabase/supabase-js'
 export interface ProfileData {
   id: string
   email: string
-  role: 'patient' | 'doctor'
+  role: 'patient' | 'doctor' | 'admin'
   first_name?: string
   last_name?: string
   // Shared
@@ -74,6 +74,25 @@ const UserContext = createContext<UserContextType>({
   logout: async () => {},
 })
 
+function profileFromUserMetadata(user: User): ProfileData {
+  const metadata = user.user_metadata || {}
+  let role: 'patient' | 'doctor' | 'admin' = 'patient'
+  if (metadata.role === 'doctor') {
+    role = 'doctor'
+  } else if (metadata.role === 'admin') {
+    role = 'admin'
+  }
+
+  return {
+    id: user.id,
+    email: user.email || '',
+    role,
+    first_name: metadata.first_name || '',
+    last_name: metadata.last_name || '',
+    license_number: metadata.license_number || undefined,
+  }
+}
+
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
@@ -130,6 +149,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setSession(initialSession)
       setUser(initialSession?.user ?? null)
       if (initialSession?.access_token) {
+        setProfile(profileFromUserMetadata(initialSession.user))
         await fetchProfile(initialSession.access_token)
       }
       setLoading(false)
@@ -140,10 +160,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Listen to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
+        setLoading(true)
         setSession(newSession)
         setUser(newSession?.user ?? null)
 
         if (event === 'SIGNED_IN' && newSession?.access_token) {
+          setProfile(profileFromUserMetadata(newSession.user))
           await fetchProfile(newSession.access_token)
         } else if (event === 'SIGNED_OUT') {
           setProfile(null)
@@ -155,7 +177,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     )
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [fetchProfile, supabase.auth])
 
   const updateProfile = useCallback(async (data: Partial<ProfileData>) => {
     if (!session?.access_token || !profile) {
@@ -200,7 +222,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setSession(null)
     setProfile(null)
     router.push('/')
-  }, [router])
+  }, [router, supabase.auth])
 
   return (
     <UserContext.Provider value={{
