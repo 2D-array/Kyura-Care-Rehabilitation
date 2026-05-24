@@ -8,7 +8,7 @@ import type { User, Session } from '@supabase/supabase-js'
 export interface ProfileData {
   id: string
   email: string
-  role: 'patient' | 'doctor'
+  role: 'patient' | 'doctor' | 'admin'
   first_name?: string
   last_name?: string
   // Shared

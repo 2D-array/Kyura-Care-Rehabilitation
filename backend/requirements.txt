@@ -2,3 +2,5 @@ fastapi[standard]
 supabase
 python-dotenv
 pydantic
+razorpay
+python-dateutil

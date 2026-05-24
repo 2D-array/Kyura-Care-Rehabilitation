@@ -12,6 +12,7 @@ const routes = [
   { label: "My Profile", icon: User, href: "/dashboard/profile" },
   { label: "Find Doctors", icon: Search, href: "/doctors" },
   { label: "Appointments", icon: Calendar, href: "/dashboard/sessions" },
+  { label: "PhysioPass", icon: ShieldCheck, href: "/plans" },
 ]
 
 const doctorRoutes = [
@@ -19,12 +20,20 @@ const doctorRoutes = [
   { label: "My Profile", icon: User, href: "/dashboard/profile" },
   { label: "My Patients", icon: Users, href: "/dashboard/patients" },
   { label: "Appointments", icon: Calendar, href: "/dashboard/sessions" },
+  { label: "Availability", icon: Calendar, href: "/dashboard/availability" },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const { profile, user, logout } = useUser()
-  const navRoutes = profile?.role === "doctor" ? doctorRoutes : routes
+
+  let navRoutes = profile?.role === "doctor" ? doctorRoutes : routes
+  if (profile?.role === "admin") {
+    navRoutes = [
+      ...routes,
+      { label: "Admin Panel", icon: ShieldCheck, href: "/admin" }
+    ]
+  }
 
   const getInitials = () => {
     if (profile?.first_name && profile?.last_name) {

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { createBrowserClient } from "@supabase/ssr"
 import { useUser } from "@/context/UserContext"
+import Link from "next/link"
 import { Calendar, Clock, Video, Building2, Home as HomeIcon, CheckCircle, XCircle } from "lucide-react"
 
 export default function AppointmentsPage() {
@@ -130,9 +131,11 @@ export default function AppointmentsPage() {
                   {/* Actions */}
                   <div className="w-full md:w-auto flex items-center justify-end gap-3 pt-4 md:pt-0 border-t md:border-0 border-slate-100 dark:border-slate-800/60 mt-2 md:mt-0">
                     {(appt.status === "scheduled" || appt.status === "confirmed") && appt.session_type === "online" && (
-                      <Button className="w-full md:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 shadow-md shadow-indigo-600/20">
-                        <Video className="w-4 h-4 mr-2" /> Join Call
-                      </Button>
+                      <Link href={`/dashboard/appointments/${appt.id}`} className="w-full md:w-auto">
+                        <Button className="w-full md:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 shadow-md shadow-indigo-600/20 gap-1">
+                          <Video className="w-4 h-4 mr-1 animate-pulse" /> Join Call
+                        </Button>
+                      </Link>
                     )}
                     {appt.status === "completed" && (
                       <Button variant="outline" className="w-full md:w-auto rounded-xl font-bold border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">

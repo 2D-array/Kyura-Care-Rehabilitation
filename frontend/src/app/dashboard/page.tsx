@@ -30,6 +30,27 @@ type DashboardAppointment = {
 export default function DashboardPage() {
   const { profile, loading } = useUser()
   const [appointments, setAppointments] = useState<DashboardAppointment[]>([])
+  
+  const [subscriptionData, setSubscriptionData] = useState<{
+    has_active_subscription: boolean
+    subscription?: {
+      id: string
+      tier: string
+      start_date: string
+      end_date: string
+      status: string
+    }
+  } | null>(null)
+  const [subLoading, setSubLoading] = useState(true)
+
+  const [stats, setStats] = useState<{
+    sessions_completed: number
+    days_to_recovery?: number
+    total_patients?: number
+    chart_data?: { name: string; progress: number }[]
+    percentage_increase?: number
+  } | null>(null)
+  const [statsLoading, setStatsLoading] = useState(true)
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -49,11 +70,68 @@ export default function DashboardPage() {
           setAppointments(data)
         }
       } catch (err) {
-        console.error(err)
+        console.error("Failed to fetch dashboard appointments:", err)
       }
     }
     fetchAppointments()
   }, [])
+
+  useEffect(() => {
+    const fetchSubscription = async () => {
+      if (profile?.role !== "patient") {
+        setSubLoading(false)
+        return
+      }
+      try {
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/subscriptions/me`, {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setSubscriptionData(data)
+        }
+      } catch (err) {
+        console.error("Failed to fetch user subscription on dashboard:", err)
+      } finally {
+        setSubLoading(false)
+      }
+    }
+
+    const fetchStats = async () => {
+      try {
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/appointments/stats`, {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setStats(data)
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard metrics:", err)
+      } finally {
+        setStatsLoading(false)
+      }
+    }
+
+    if (profile) {
+      fetchSubscription()
+      fetchStats()
+    }
+  }, [profile])
 
   const isProfileComplete = profile?.role === "patient"
     ? !!(profile?.first_name && profile?.phone_number && profile?.date_of_birth)
@@ -103,18 +181,68 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* PhysioPass Subscription Banner */}
+      {profile?.role === "patient" && !subLoading && (
+        subscriptionData?.has_active_subscription ? (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-[2rem] bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 dark:border-emerald-500/10 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+            <div className="flex items-center gap-3.5 relative z-10">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-inner">
+                <CheckCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="font-black text-slate-900 dark:text-white text-base">CuraReb PhysioPass Active 🎉</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                  Premium tier: <span className="capitalize text-emerald-600 dark:text-emerald-400 font-bold">{subscriptionData.subscription?.tier}</span> · Expires on {subscriptionData.subscription?.end_date ? new Date(subscriptionData.subscription.end_date).toLocaleDateString() : 'N/A'}
+                </p>
+              </div>
+            </div>
+            <Link href="/plans" className="relative z-10">
+              <Button variant="outline" size="sm" className="rounded-xl border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold gap-1 shadow-sm">
+                Manage Billing
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-6 rounded-[2rem] bg-gradient-to-br from-indigo-600 via-indigo-600 to-purple-600 text-white shadow-[0_15px_35px_-10px_rgba(79,70,229,0.4)] relative overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_-10px_rgba(79,70,229,0.5)]">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
+            
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center shadow-inner shrink-0 backdrop-blur-md">
+                <AlertCircle className="w-7 h-7 text-white" />
+              </div>
+              <div className="space-y-1">
+                <p className="font-black text-lg tracking-tight">Unlock Unlimited Consultations with PhysioPass ⚡</p>
+                <p className="text-xs text-indigo-100 font-medium max-w-xl leading-relaxed">
+                  You do not have an active subscription. Upgrade to a premium plan today to unlock booking verified physiotherapists, AI recovery tools, and video consultations.
+                </p>
+              </div>
+            </div>
+            
+            <Link href="/plans" className="relative z-10 shrink-0 w-full sm:w-auto">
+              <Button className="w-full sm:w-auto rounded-xl bg-white hover:bg-slate-50 text-indigo-600 font-extrabold gap-1.5 shadow-lg px-6 h-11">
+                Get PhysioPass <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        )
+      )}
+
       {/* Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5 auto-rows-min">
 
         {/* Chart */}
         <Card className="md:col-span-3 row-span-2 p-6 rounded-[2rem] bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl border border-slate-200/60 dark:border-white/5 shadow-lg transition-all hover:shadow-xl">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Recovery Progress</h2>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              {profile?.role === "doctor" ? "Weekly Practice Load" : "Recovery Progress"}
+            </h2>
             <div className="px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-bold flex items-center gap-1">
-              <Activity className="w-3 h-3" /> +15% this week
+              <Activity className="w-3 h-3" /> {stats?.percentage_increase !== undefined ? `+${stats.percentage_increase}% this week` : "+15% this week"}
             </div>
           </div>
-          <RecoveryChart />
+          <RecoveryChart data={stats?.chart_data} />
         </Card>
 
         {/* Sessions Stat */}
@@ -123,7 +251,9 @@ export default function DashboardPage() {
             <CheckCircle className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-4xl font-black tracking-tighter mb-1">12</div>
+            <div className="text-4xl font-black tracking-tighter mb-1">
+              {statsLoading ? "..." : stats?.sessions_completed ?? 0}
+            </div>
             <div className="text-indigo-100 font-medium text-sm">Sessions Completed</div>
           </div>
         </Card>
@@ -134,8 +264,12 @@ export default function DashboardPage() {
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-4xl font-black tracking-tighter mb-1 text-slate-900 dark:text-white">24</div>
-            <div className="text-slate-500 font-medium text-sm">Days to Full Recovery</div>
+            <div className="text-4xl font-black tracking-tighter mb-1 text-slate-900 dark:text-white">
+              {statsLoading ? "..." : profile?.role === "doctor" ? (stats?.total_patients ?? 0) : (stats?.days_to_recovery ?? 24)}
+            </div>
+            <div className="text-slate-500 font-medium text-sm">
+              {profile?.role === "doctor" ? "Active Patients Treated" : "Days to Full Recovery"}
+            </div>
           </div>
         </Card>
 
@@ -161,7 +295,6 @@ export default function DashboardPage() {
               )
             }
 
-            // Determine if patient or doctor view
             const isPatient = profile?.role === "patient"
             const otherParty = isPatient ? nextAppt.doctors : nextAppt.patients
             const name = otherParty?.profiles?.first_name 
@@ -184,9 +317,11 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 {nextAppt.session_type === "online" && (
-                  <Button className="w-full sm:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg font-bold px-5 h-10 text-sm">
-                    <Video className="w-3 h-3 mr-1.5" /> Join
-                  </Button>
+                  <Link href={`/dashboard/appointments/${nextAppt.id}`}>
+                    <Button className="w-full sm:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg font-bold px-5 h-10 text-sm gap-1">
+                      <Video className="w-3 h-3 mr-0.5 animate-pulse" /> Join
+                    </Button>
+                  </Link>
                 )}
               </div>
             )

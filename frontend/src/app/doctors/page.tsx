@@ -28,6 +28,9 @@ type Doctor = {
   years_of_experience?: number
   available_days?: string
   is_verified?: boolean
+  average_rating?: number
+  review_count?: number
+  available_session_types?: string[]
 }
 
 const CATEGORIES = [
@@ -367,16 +370,17 @@ export default function DoctorDiscovery() {
 
                           {/* Details */}
                           <div className="flex flex-wrap gap-4 pt-2">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                              <span className="font-bold text-slate-700 dark:text-slate-300">
+                                {(doc.average_rating ?? 0) > 0 ? (doc.average_rating ?? 0).toFixed(1) : "New"}
+                              </span>
+                              <span className="text-slate-400 font-medium">({doc.review_count ?? 0} reviews)</span>
+                            </div>
                             {doc.years_of_experience && (
                               <div className="flex items-center gap-2 text-sm">
-                                <Star className="w-4 h-4 text-amber-500" />
-                                <span className="font-bold text-slate-700 dark:text-slate-300">{doc.years_of_experience} years exp.</span>
-                              </div>
-                            )}
-                            {doc.available_days && (
-                              <div className="flex items-center gap-2 text-sm">
                                 <Calendar className="w-4 h-4 text-indigo-500" />
-                                <span className="font-medium text-slate-600 dark:text-slate-400">{doc.available_days}</span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">{doc.years_of_experience} years exp.</span>
                               </div>
                             )}
                           </div>
